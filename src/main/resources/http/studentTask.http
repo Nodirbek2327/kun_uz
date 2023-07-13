@@ -1,0 +1,148 @@
+### Create student
+POST localhost:8080/student/create
+Content-Type: application/json
+
+{
+  "name": "Sarvar",
+  "surname": "Hasanov",
+  "level": "intermediate",
+  "age": 11,
+  "gender": "MALE"
+}
+
+
+
+### Get all student
+GET localhost:8080/student/all
+
+
+### Get by ages
+GET localhost:8080/student/ages/12/20
+
+### Get by id
+GET localhost:8080/student/id/2
+
+### Get by like name
+GET localhost:8080/student/likeName/al
+
+### Get by name
+GET localhost:8080/student/native/Asal
+
+### Get by surname
+GET localhost:8080/student/surname/Valiyev
+
+### Get by level
+GET localhost:8080/student/level/elementary
+
+### Get by age
+GET localhost:8080/student/age/13
+
+### Get by date
+GET localhost:8080/student/date/2023-07-07
+
+### Get by dates
+GET localhost:8080/student/dates/2023-07-07/2023-07-08
+
+### Delete by id
+DELETE localhost:8080/student/2
+
+### update by id
+PUT localhost:8080/student/update/3
+Content-Type: application/json
+
+{
+  "name": "Alijon",
+  "surname": "Alihonov",
+  "age": 14
+}
+
+### get all by age in
+POST localhost:8080/student/ageIn
+Content-Type: application/json
+
+[
+  18,
+  22,
+  24
+]
+
+
+### Get by pagination
+GET localhost:8080/student/pagination/2/2
+
+
+### Get by paginationbylevel
+GET localhost:8080/student/pagination/level/beginner/0/2
+
+
+### Get by paginationbygender
+GET localhost:8080/student/pagination/gender/MALE/1/2
+
+
+### Get by paginationbydates
+GET localhost:8080/student/pagination/createDate/2023-07-07/2023-07-08/1/2
+
+
+
+
+
+###  ********************************   Course  ************************************
+### Create course
+POST localhost:8080/course/create
+Content-Type: application/json
+
+{
+  "name": "matematika",
+  "price": "400000",
+  "duration": "12 month"
+}
+
+
+
+### Get all student
+GET localhost:8080/course/all
+
+### Get by id
+GET localhost:8080/course/id/2
+
+### Get by name
+GET localhost:8080/course/name/english
+
+### Get by price
+GET localhost:8080/course/price/450000
+
+### Get by duration
+GET localhost:8080/course/duration/12 month
+
+### Get by dates
+GET localhost:8080/course/dates/2023-07-06/2023-07-08
+
+### Get by prices
+GET localhost:8080/course/prices/400000/500000
+
+
+### Delete by id
+DELETE localhost:8080/course/1
+
+### update by id
+PUT localhost:8080/student/2
+Content-Type: application/json
+
+{
+  "name": "Alijon",
+  "surname": "Aliyevhon"
+}
+
+
+
+### Get by paginationbydates
+GET localhost:8080/course/pagination/createDate/2023-07-07/2023-07-08/1/2
+
+
+
+
+
+
+
+
+
