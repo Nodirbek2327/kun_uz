@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -17,9 +18,11 @@ public class RegionEntity {
     @Id
     private UUID id;
     private Integer order_number;
+    @Column(nullable = false)
     private String name_uz;
+    @Column(nullable = false)
     private String name_ru;
-    private String name_eng;
+    @Column(nullable = false)
     private Boolean visible;
     private LocalDateTime createdDate;
 }
