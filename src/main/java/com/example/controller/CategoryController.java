@@ -1,20 +1,36 @@
 package com.example.controller;
 
 import com.example.dto.CategoryDTO;
+import com.example.dto.RegionJwtDTO;
 import com.example.service.CategoryService;
+import com.example.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/api/v1/category")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+
+    @PostMapping(value = {""})
+    public ResponseEntity<?> create(@RequestBody CategoryDTO dto,
+                                    @RequestHeader("Authorization") String authToken) {
+        RegionJwtDTO regionJwtDTO = SecurityUtil.getRegionJwtDTO(authToken);
+        return ResponseEntity.ok(categoryService.createWithJwt(dto, regionJwtDTO.getId()));
+    }
+
+    @PutMapping(value = "/update/jwt")
+    public ResponseEntity<Boolean> update(@RequestBody CategoryDTO dto,
+                                          @RequestHeader("Authorization") String authToken) {
+        RegionJwtDTO regionJwtDTO = SecurityUtil.getRegionJwtDTO(authToken);
+        return ResponseEntity.ok(categoryService.updateWithJwt(regionJwtDTO.getId(), dto));
+    }
 
     @PostMapping(value = "/create")
     public ResponseEntity<?> create(@RequestBody CategoryDTO profileDTO) {

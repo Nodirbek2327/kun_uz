@@ -1,24 +1,39 @@
 package com.example.controller;
 
 
-import com.example.dto.ProfileDTO;
-import com.example.dto.ProfileFilterDTO;
+import com.example.dto.JwtDTO;
 import com.example.dto.RegionDTO;
-import com.example.entity.RegionEntity;
+import com.example.dto.RegionJwtDTO;
+import com.example.enums.ProfileRole;
 import com.example.service.RegionService;
+import com.example.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/region")
+@RequestMapping("/api/v1/region")
 public class RegionController {
     @Autowired
     private RegionService regionService;
+
+    @PostMapping(value = {""})
+    public ResponseEntity<?> create(@RequestBody RegionDTO dto,
+                                    @RequestHeader("Authorization") String authToken) {
+        RegionJwtDTO regionJwtDTO = SecurityUtil.getRegionJwtDTO(authToken);
+        return ResponseEntity.ok(regionService.createWithJwt(dto, regionJwtDTO.getId()));
+    }
+
+    @PutMapping(value = "/update/jwt")
+    public ResponseEntity<Boolean> update(@RequestBody RegionDTO dto,
+                                          @RequestHeader("Authorization") String authToken) {
+        RegionJwtDTO regionJwtDTO = SecurityUtil.getRegionJwtDTO(authToken);
+        return ResponseEntity.ok(regionService.updateWithJwt(regionJwtDTO.getId(), dto));
+    }
+
 
     @PostMapping(value = "/create")
     public ResponseEntity<?> create(@RequestBody RegionDTO profileDTO) {

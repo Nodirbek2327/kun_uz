@@ -17,6 +17,33 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    public CategoryDTO createWithJwt(CategoryDTO dto, Integer prtId) {
+        check(dto);
+        CategoryEntity entity = new CategoryEntity();
+        entity.setNameUz(dto.getNameUz());
+        entity.setNameRu(dto.getNameRu());
+        entity.setNameEng(dto.getNameEng());
+        entity.setCId(prtId);
+        categoryRepository.save(entity);
+
+        dto.setId(entity.getId());
+        dto.setCreatedDate(entity.getCreatedDate());
+        return dto;
+    }
+
+    public Boolean updateWithJwt(Integer id, CategoryDTO dto) {
+        check(dto); // check
+        CategoryEntity entity = get(id); // get
+        entity.setNameEng(dto.getNameEng());
+        entity.setNameRu(dto.getNameRu());
+        entity.setNameUz(dto.getNameUz());
+        categoryRepository.save(entity);
+        return true;
+    }
+
+    public CategoryEntity get(Integer id) {
+        return categoryRepository.findById(id).orElseThrow(() -> new AppBadRequestException("Profile not found"));
+    }
 
     public CategoryDTO add(CategoryDTO dto) {
         //dto.setCreatedDate(LocalDateTime.now());

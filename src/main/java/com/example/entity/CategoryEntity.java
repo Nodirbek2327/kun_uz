@@ -23,5 +23,6 @@ public class CategoryEntity {
     private String nameEng;
     @Column(nullable = false)
     private Boolean visible=true;
+    private Integer cId;
     private LocalDateTime createdDate= LocalDateTime.now();
 }

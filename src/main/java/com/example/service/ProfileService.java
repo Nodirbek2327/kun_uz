@@ -27,10 +27,6 @@ public class ProfileService {
     private CustomRepository customRepository;
 
     public ProfileDTO create(ProfileDTO dto, Integer prtId) {
-        // TODO checking
-        //  ctrl+alt <-
-        // alt <- ,  atl ->
-        // ctl b
         check(dto);
         Optional<ProfileEntity> profileByEmail = profileRepository.findByEmail(dto.getEmail());
         if (profileByEmail.isPresent()) {

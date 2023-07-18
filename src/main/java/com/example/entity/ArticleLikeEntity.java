@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 public class ArticleLikeEntity {
     @Id
     private String id;
-    @ManyToOne
-    @JoinColumn(name = "id")
-    private ProfileEntity profileId;
-    private Integer articleId;
-    private LocalDateTime createdDate;
-    private ArticleLikeStatus status;
+//    @ManyToOne
+//    @JoinColumn(name = "id")
+//    private ProfileEntity profileId;
+//    private Integer articleId;
+//    private LocalDateTime createdDate;
+//    private ArticleLikeStatus status;
 
 }

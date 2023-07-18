@@ -12,15 +12,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/profile")
+@RequestMapping("/api/v1/profile")
 public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PostMapping(value = {"", "/"})
+    @PostMapping(value = {""})
     public ResponseEntity<?> create(@RequestBody ProfileDTO dto,
                                     @RequestHeader("Authorization") String authToken) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
@@ -32,7 +31,7 @@ public class ProfileController {
                                           @PathVariable("id") Integer id,
                                           @RequestHeader("Authorization") String authToken) {
         JwtDTO jwtDTO = SecurityUtil.hasRole(authToken, ProfileRole.ADMIN);
-        return ResponseEntity.ok(profileService.update(id, dto));
+        return ResponseEntity.ok(profileService.update2(id, dto));
     }
 
 

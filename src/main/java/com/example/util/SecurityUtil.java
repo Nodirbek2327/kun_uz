@@ -1,6 +1,7 @@
 package com.example.util;
 
 import com.example.dto.JwtDTO;
+import com.example.dto.RegionJwtDTO;
 import com.example.enums.ProfileRole;
 import com.example.exp.AppMethodNotAllowedException;
 import com.example.exp.UnAuthorizedException;
@@ -20,5 +21,13 @@ public class SecurityUtil {
             throw new AppMethodNotAllowedException();
         }
         return jwtDTO;
+    }
+
+    public static RegionJwtDTO getRegionJwtDTO(String authToken) {
+        if (authToken.startsWith("Bearer ")) {
+            String jwt = authToken.substring(7);
+            return JWTUtil.decodeRegion(jwt);
+        }
+        throw new UnAuthorizedException("Not authorized");
     }
 }

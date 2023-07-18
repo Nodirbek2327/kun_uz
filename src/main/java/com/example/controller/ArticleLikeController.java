@@ -4,6 +4,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("article_like")
+@RequestMapping("/api/v1/article_like")
 public class ArticleLikeController {
 }

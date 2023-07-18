@@ -1,21 +1,35 @@
 package com.example.controller;
 
 import com.example.dto.ArticleTypeDTO;
-import com.example.dto.CategoryDTO;
+import com.example.dto.RegionJwtDTO;
 import com.example.service.ArticleTypeService;
+import com.example.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("article_type")
+@RequestMapping("/api/v1/article_type")
 public class ArticleTypeController {
     @Autowired
     private ArticleTypeService articleTypeService;
+
+    @PostMapping(value = {""})
+    public ResponseEntity<?> create(@RequestBody ArticleTypeDTO dto,
+                                    @RequestHeader("Authorization") String authToken) {
+        RegionJwtDTO regionJwtDTO = SecurityUtil.getRegionJwtDTO(authToken);
+        return ResponseEntity.ok(articleTypeService.createWithJwt(dto, regionJwtDTO.getId()));
+    }
+
+    @PutMapping(value = "/update/jwt")
+    public ResponseEntity<Boolean> update(@RequestBody ArticleTypeDTO dto,
+                                          @RequestHeader("Authorization") String authToken) {
+        RegionJwtDTO regionJwtDTO = SecurityUtil.getRegionJwtDTO(authToken);
+        return ResponseEntity.ok(articleTypeService.updateWithJwt(regionJwtDTO.getId(), dto));
+    }
     @PostMapping(value = "/create")
     public ResponseEntity<?> create(@RequestBody ArticleTypeDTO articleTypeDTO) {
         ArticleTypeDTO response = articleTypeService.add(articleTypeDTO);

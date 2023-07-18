@@ -1,6 +1,7 @@
 package com.example.util;
 
 import com.example.dto.JwtDTO;
+import com.example.dto.RegionJwtDTO;
 import com.example.enums.ProfileRole;
 import io.jsonwebtoken.*;
 
@@ -36,5 +37,31 @@ public class JWTUtil {
         ProfileRole profileRole = ProfileRole.valueOf(role);
 
         return new JwtDTO(id, profileRole);
+    }
+
+
+    public static String encodeRegion(Integer id) {
+        JwtBuilder jwtBuilder = Jwts.builder();
+        jwtBuilder.setIssuedAt(new Date());
+        jwtBuilder.signWith(SignatureAlgorithm.HS512, secretKey);
+
+        jwtBuilder.claim("id", id);
+
+        jwtBuilder.setExpiration(new Date(System.currentTimeMillis() + (tokenLiveTime)));
+        jwtBuilder.setIssuer("kunuz test portali");
+        return jwtBuilder.compact();
+    }
+
+    public static RegionJwtDTO decodeRegion(String token) {
+        JwtParser jwtParser = Jwts.parser();
+        jwtParser.setSigningKey(secretKey);
+
+        Jws<Claims> jws = jwtParser.parseClaimsJws(token);
+
+        Claims claims = jws.getBody();
+
+        Integer id = (Integer) claims.get("id");
+
+        return new RegionJwtDTO(id);
     }
 }

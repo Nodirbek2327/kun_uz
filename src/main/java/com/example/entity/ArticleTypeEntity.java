@@ -22,5 +22,6 @@ public class ArticleTypeEntity {
     @Column(name = "name_eng", nullable = false)
     private String nameEng;
     private Boolean visible=true;
+    private Integer atId;
     private LocalDateTime createdDate= LocalDateTime.now();
 }

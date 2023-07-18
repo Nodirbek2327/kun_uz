@@ -1,21 +1,55 @@
 package com.example.service;
 
+import com.example.dto.ProfileDTO;
 import com.example.dto.RegionDTO;
+import com.example.entity.ProfileEntity;
 import com.example.entity.RegionEntity;
+import com.example.enums.ProfileStatus;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.mapper.RegionMapper;
 import com.example.repository.RegionRepository;
+import com.example.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RegionService {
     @Autowired
     private RegionRepository regionRepository;
+
+
+    public RegionDTO createWithJwt(RegionDTO dto, Integer prtId) {
+        check(dto);
+        RegionEntity entity = new RegionEntity();
+        entity.setNameUz(dto.getNameUz());
+        entity.setNameRu(dto.getNameRu());
+        entity.setNameEng(dto.getNameEng());
+        entity.setRId(prtId);
+        regionRepository.save(entity);
+
+        dto.setId(entity.getId());
+        dto.setCreatedDate(entity.getCreatedDate());
+        return dto;
+    }
+
+    public Boolean updateWithJwt(Integer id, RegionDTO dto) {
+        check(dto); // check
+        RegionEntity entity = get(id); // get
+        entity.setNameEng(dto.getNameEng());
+        entity.setNameRu(dto.getNameRu());
+        entity.setNameUz(dto.getNameUz());
+        regionRepository.save(entity);
+        return true;
+    }
+
+    public RegionEntity get(Integer id) {
+        return regionRepository.findById(id).orElseThrow(() -> new AppBadRequestException("Profile not found"));
+    }
 
     public RegionDTO add(RegionDTO dto) {
       //  dto.setCreatedDate(LocalDateTime.now());
