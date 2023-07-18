@@ -7,7 +7,6 @@ import com.example.dto.RegionDTO;
 import com.example.entity.RegionEntity;
 import com.example.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +27,13 @@ public class RegionController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(@RequestParam("id") UUID id,
+    public ResponseEntity<?> update(@RequestParam("id") Integer id,
                                     @RequestBody RegionDTO regionDTO) {
         return ResponseEntity.ok(regionService.update(id, regionDTO));
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(@RequestParam("id") UUID id) {
+    public ResponseEntity<String> delete(@RequestParam("id") Integer id) {
         Boolean response = regionService.delete(id);
         if (response) {
             return ResponseEntity.ok("region deleted");

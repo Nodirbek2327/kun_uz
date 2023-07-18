@@ -4,10 +4,12 @@ import com.example.dto.FilterDTO;
 import com.example.dto.ProfileDTO;
 import com.example.dto.ProfileFilterDTO;
 import com.example.entity.ProfileEntity;
+import com.example.enums.ProfileStatus;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.CustomRepository;
 import com.example.repository.ProfileRepository;
+import com.example.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ProfileService {
@@ -25,16 +26,63 @@ public class ProfileService {
     @Autowired
     private CustomRepository customRepository;
 
-    public ProfileDTO add(ProfileDTO dto) {
-        dto.setId(UUID.randomUUID());
-        dto.setCreatedDate(LocalDateTime.now());
+    public ProfileDTO create(ProfileDTO dto, Integer prtId) {
+        // TODO checking
+        //  ctrl+alt <-
+        // alt <- ,  atl ->
+        // ctl b
         check(dto);
-        ProfileEntity entity = toEntity(dto);
+        Optional<ProfileEntity> profileByEmail = profileRepository.findByEmail(dto.getEmail());
+        if (profileByEmail.isPresent()) {
+            throw new AppBadRequestException("Email already exists");
+        }
+        Optional<ProfileEntity> profileByPhone = profileRepository.findByPhone(dto.getPhone());
+        if (profileByPhone.isPresent()) {
+            throw new AppBadRequestException("Phone already exits");
+        }
+
+        ProfileEntity entity = new ProfileEntity();
+        entity.setName(dto.getName());
+        entity.setSurname(dto.getSurname());
+        entity.setEmail(dto.getEmail());
+        entity.setPhone(dto.getPhone());
+        entity.setPassword(MD5Util.encode(dto.getPassword()));
+        entity.setStatus(ProfileStatus.ACTIVE);
+        entity.setRole(dto.getRole());
+        entity.setPrtId(prtId);
         profileRepository.save(entity);
+
+        dto.setId(entity.getId());
+        dto.setCreatedDate(entity.getCreatedDate());
         return dto;
     }
 
-    public Boolean update(UUID id, ProfileDTO profileDTO) {
+    public Boolean update2(Integer profileId, ProfileDTO dto) {
+        check(dto); // check
+        ProfileEntity entity = get(profileId); // get
+        entity.setName(dto.getName());
+        entity.setSurname(dto.getSurname());
+        entity.setEmail(dto.getEmail());
+        entity.setPhone(dto.getPhone());
+        profileRepository.save(entity);
+        return true;
+    }
+
+    public ProfileEntity get(Integer profileId) {
+        return profileRepository.findById(profileId).orElseThrow(() -> new AppBadRequestException("Profile not found"));
+    }
+
+
+    public ProfileDTO add(ProfileDTO dto) {
+        //dto.setCreatedDate(LocalDateTime.now());
+        check(dto);
+        ProfileEntity entity = toEntity(dto);
+        profileRepository.save(entity);
+        dto.setId(entity.getId());
+        return dto;
+    }
+
+    public Boolean update(Integer id, ProfileDTO profileDTO) {
         check(profileDTO);
         int effectedRows = profileRepository.updateAttribute(id,  toEntity(profileDTO));
         return effectedRows>0;
@@ -47,13 +95,8 @@ public class ProfileService {
         return new PageImpl<>(getProfileDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
 
-    public Boolean delete(UUID id) {
-        Optional<ProfileEntity> optional = profileRepository.findById(id);
-        if (optional.isEmpty()) {
-            return false;
-        }
-        profileRepository.deleteById(id);
-        return true;
+    public Boolean delete(Integer id) {
+        return profileRepository.delete(id)==1;
     }
 
     public PageImpl<ProfileDTO> filter(ProfileFilterDTO filterDTO, int page, int size) {
@@ -86,7 +129,7 @@ public class ProfileService {
         dto.setEmail(entity.getEmail());
         dto.setStatus(entity.getStatus());
         dto.setCreatedDate(entity.getCreatedDate());
-        dto.setPhoto_id(entity.getPhoto_id());
+    //    dto.setPhoto_id(entity.getPhoto_id());
         dto.setVisible(entity.getVisible());
         dto.setPhone(entity.getPhone());
         dto.setPassword(entity.getPassword());
@@ -102,7 +145,7 @@ public class ProfileService {
         entity.setEmail(dto.getEmail());
         entity.setStatus(dto.getStatus());
         entity.setCreatedDate(dto.getCreatedDate());
-        entity.setPhoto_id(dto.getPhoto_id());
+     //   entity.setPhoto_id(dto.getPhoto_id());
         entity.setVisible(dto.getVisible());
         entity.setPhone(dto.getPhone());
         entity.setPassword(dto.getPassword());

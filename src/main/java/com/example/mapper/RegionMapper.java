@@ -8,7 +8,7 @@ import java.util.UUID;
 @Setter
 @Getter
 public class RegionMapper {
-    private UUID id;
+    private Integer id;
     private Integer order_number;
     private String name;
 }

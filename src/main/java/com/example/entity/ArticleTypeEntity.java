@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Setter
@@ -13,14 +12,15 @@ import java.util.UUID;
 @Table(name = "articleType")
 public class ArticleTypeEntity {
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private Integer order_number;
-    @Column(nullable = false)
-    private String name_uz;
-    @Column(nullable = false)
-    private String name_ru;
-    @Column(nullable = false)
-    private String name_eng;
-    private Boolean visible;
-    private LocalDateTime createdDate;
+    @Column(name = "name_uz", nullable = false)
+    private String nameUz;
+    @Column(name = "name_ru", nullable = false)
+    private String nameRu;
+    @Column(name = "name_eng", nullable = false)
+    private String nameEng;
+    private Boolean visible=true;
+    private LocalDateTime createdDate= LocalDateTime.now();
 }

@@ -8,13 +8,15 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
-import java.util.UUID;
 
-public interface RegionRepository extends CrudRepository<RegionEntity, UUID>, PagingAndSortingRepository<RegionEntity, UUID> {
+public interface RegionRepository extends CrudRepository<RegionEntity, Integer>, PagingAndSortingRepository<RegionEntity, Integer> {
 
     @Transactional
     @Modifying
     @Query("UPDATE RegionEntity e SET e = :newEntity WHERE e.id = :entityId")
-    int updateAttribute(@Param("entityId") UUID entityId, @Param("newEntity") RegionEntity newEntity);
-
+    int updateAttribute(@Param("entityId") Integer entityId, @Param("newEntity") RegionEntity newEntity);
+    @Transactional
+    @Modifying
+    @Query("update RegionEntity set visible = false where id =:id")
+    int delete(@Param("id") Integer id);
 }

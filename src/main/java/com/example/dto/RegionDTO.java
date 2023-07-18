@@ -2,6 +2,7 @@ package com.example.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,12 +12,13 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RegionDTO {
-    private UUID id;
+    private Integer id;
     private Integer order_number;
-    private String name_uz;
-    private String name_ru;
-    private String name_eng;
+    private String nameUz;
+    private String nameRu;
+    private String nameEng;
     private Boolean visible;
     private LocalDateTime createdDate;
 }

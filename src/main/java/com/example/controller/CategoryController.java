@@ -23,13 +23,13 @@ public class CategoryController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(@RequestParam("id") UUID id,
+    public ResponseEntity<?> update(@RequestParam("id") Integer id,
                                     @RequestBody CategoryDTO categoryDTO) {
         return ResponseEntity.ok(categoryService.update(id, categoryDTO));
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(@RequestParam("id") UUID id) {
+    public ResponseEntity<String> delete(@RequestParam("id") Integer id) {
         Boolean response = categoryService.delete(id);
         if (response) {
             return ResponseEntity.ok("category deleted");

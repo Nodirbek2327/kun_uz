@@ -9,14 +9,15 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
-import java.util.UUID;
-
-public interface CategoryRepository extends CrudRepository<CategoryEntity, UUID>, PagingAndSortingRepository<CategoryEntity, UUID> {
+public interface CategoryRepository extends CrudRepository<CategoryEntity, Integer>, PagingAndSortingRepository<CategoryEntity, Integer> {
 
     @Transactional
     @Modifying
     @Query("UPDATE CategoryEntity e SET e = :newEntity WHERE e.id = :entityId")
-    int updateAttribute(@Param("entityId") UUID entityId, @Param("newEntity") CategoryEntity newEntity);
-
+    int updateAttribute(@Param("entityId") Integer entityId, @Param("newEntity") CategoryEntity newEntity);
+    @Transactional
+    @Modifying
+    @Query("update CategoryEntity set visible = false where id =:id")
+    int delete(@Param("id") Integer id);
 
 }

@@ -8,14 +8,21 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
-import java.util.UUID;
+import java.util.Optional;
 
-public interface ProfileRepository extends CrudRepository<ProfileEntity, UUID>, PagingAndSortingRepository<ProfileEntity, UUID> {
+public interface ProfileRepository extends CrudRepository<ProfileEntity, Integer>, PagingAndSortingRepository<ProfileEntity, Integer> {
 
     @Transactional
     @Modifying
     @Query("UPDATE ProfileEntity e SET e = :newEntity WHERE e.id = :entityId")
-    int updateAttribute(@Param("entityId") UUID entityId, @Param("newEntity") ProfileEntity newEntity);
+    int updateAttribute(@Param("entityId") Integer entityId, @Param("newEntity") ProfileEntity newEntity);
 
+    Optional<ProfileEntity> findByPhone(String phone);
+    @Transactional
+    @Modifying
+    @Query("update ProfileEntity set visible = false where id =:id")
+    int delete(@Param("id") Integer id);
+
+    Optional<ProfileEntity> findByEmail(String email);
 
 }

@@ -9,11 +9,8 @@ import com.example.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class CategoryService {
@@ -22,27 +19,22 @@ public class CategoryService {
 
 
     public CategoryDTO add(CategoryDTO dto) {
-        dto.setId(UUID.randomUUID());
-        dto.setCreatedDate(LocalDateTime.now());
+        //dto.setCreatedDate(LocalDateTime.now());
         check(dto);
         CategoryEntity entity = toEntity(dto);
         categoryRepository.save(entity);
+        dto.setId(entity.getId());
         return dto;
     }
 
-    public Boolean update(UUID id, CategoryDTO categoryDTO) {
+    public Boolean update(Integer id, CategoryDTO categoryDTO) {
         check(categoryDTO);
         int effectedRows = categoryRepository.updateAttribute(id, toEntity(categoryDTO));
         return effectedRows > 0;
     }
 
-    public Boolean delete(UUID id) {
-        Optional<CategoryEntity> optional = categoryRepository.findById(id);
-        if (optional.isEmpty()) {
-            return false;
-        }
-        categoryRepository.deleteById(id);
-        return true;
+    public Boolean delete(Integer id) {
+        return  categoryRepository.delete(id)==1;
     }
 
     public List<CategoryDTO> getAll() {
@@ -62,7 +54,7 @@ public class CategoryService {
                 RegionMapper regionMapper = new RegionMapper();
                 regionMapper.setId(regionEntity.getId());
                 regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getName_ru());
+                regionMapper.setName(regionEntity.getNameRu());
                 list.add(regionMapper);
             });
         } else if (lang.startsWith("eng")) {
@@ -70,7 +62,7 @@ public class CategoryService {
                 RegionMapper regionMapper = new RegionMapper();
                 regionMapper.setId(regionEntity.getId());
                 regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getName_eng());
+                regionMapper.setName(regionEntity.getNameEng());
                 list.add(regionMapper);
             });
         } else if (lang.startsWith("uz")) {
@@ -78,7 +70,7 @@ public class CategoryService {
                 RegionMapper regionMapper = new RegionMapper();
                 regionMapper.setId(regionEntity.getId());
                 regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getName_uz());
+                regionMapper.setName(regionEntity.getNameUz());
                 list.add(regionMapper);
             });
         } else {
@@ -88,13 +80,13 @@ public class CategoryService {
     }
 
     private void check(CategoryDTO categoryDTO) {
-        if (categoryDTO.getName_uz() == null || categoryDTO.getName_uz().isBlank()) {
+        if (categoryDTO.getNameUz() == null || categoryDTO.getNameUz().isBlank()) {
             throw new AppBadRequestException("uzbekcha Name qani?");
         }
-        if (categoryDTO.getName_ru() == null || categoryDTO.getName_ru().isBlank()) {
+        if (categoryDTO.getNameRu() == null || categoryDTO.getNameRu().isBlank()) {
             throw new AppBadRequestException("ruscha Name qani?");
         }
-        if (categoryDTO.getName_eng() == null || categoryDTO.getName_eng().isBlank()) {
+        if (categoryDTO.getNameEng() == null || categoryDTO.getNameEng().isBlank()) {
             throw new AppBadRequestException("englizcha Name qani?");
         }
         if (categoryDTO.getOrder_number() == null ) {
@@ -107,9 +99,9 @@ public class CategoryService {
         entity.setId(dto.getId());
         entity.setCreatedDate(dto.getCreatedDate());
         entity.setVisible(dto.getVisible());
-        entity.setName_eng(dto.getName_eng());
-        entity.setName_ru(dto.getName_ru());
-        entity.setName_uz(dto.getName_uz());
+        entity.setNameEng(dto.getNameEng());
+        entity.setNameRu(dto.getNameRu());
+        entity.setNameUz(dto.getNameUz());
         entity.setOrder_number(dto.getOrder_number());
         return entity;
     }
@@ -119,9 +111,9 @@ public class CategoryService {
         entity.setId(dto.getId());
         entity.setCreatedDate(dto.getCreatedDate());
         entity.setVisible(dto.getVisible());
-        entity.setName_eng(dto.getName_eng());
-        entity.setName_ru(dto.getName_ru());
-        entity.setName_uz(dto.getName_uz());
+        entity.setNameEng(dto.getNameEng());
+        entity.setNameRu(dto.getNameRu());
+        entity.setNameUz(dto.getNameUz());
         entity.setOrder_number(dto.getOrder_number());
         return entity;
     }

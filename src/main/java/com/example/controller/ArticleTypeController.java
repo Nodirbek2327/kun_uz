@@ -23,13 +23,13 @@ public class ArticleTypeController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> update(@RequestParam("id") UUID id,
+    public ResponseEntity<?> update(@RequestParam("id") Integer id,
                                     @RequestBody ArticleTypeDTO articleTypeDTO) {
         return ResponseEntity.ok(articleTypeService.update(id, articleTypeDTO));
     }
 
     @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(@RequestParam("id") UUID id) {
+    public ResponseEntity<String> delete(@RequestParam("id") Integer id) {
         Boolean response = articleTypeService.delete(id);
         if (response) {
             return ResponseEntity.ok("articleType deleted");

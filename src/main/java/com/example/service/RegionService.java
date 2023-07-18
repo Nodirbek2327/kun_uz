@@ -9,11 +9,8 @@ import com.example.repository.RegionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class RegionService {
@@ -21,27 +18,22 @@ public class RegionService {
     private RegionRepository regionRepository;
 
     public RegionDTO add(RegionDTO dto) {
-        dto.setId(UUID.randomUUID());
-        dto.setCreatedDate(LocalDateTime.now());
+      //  dto.setCreatedDate(LocalDateTime.now());
         check(dto);
         RegionEntity entity = toEntity(dto);
         regionRepository.save(entity);
+        dto.setId(entity.getId());
         return dto;
     }
 
-    public Boolean update(UUID id, RegionDTO profileDTO) {
+    public Boolean update(Integer id, RegionDTO profileDTO) {
         check(profileDTO);
         int effectedRows = regionRepository.updateAttribute(id, toEntity(profileDTO));
         return effectedRows > 0;
     }
 
-    public Boolean delete(UUID id) {
-        Optional<RegionEntity> optional = regionRepository.findById(id);
-        if (optional.isEmpty()) {
-            return false;
-        }
-        regionRepository.deleteById(id);
-        return true;
+    public Boolean delete(Integer id) {
+       return regionRepository.delete(id)==1;
     }
 
     public List<RegionDTO> getAll() {
@@ -54,13 +46,13 @@ public class RegionService {
     }
 
     private void check(RegionDTO regionDTO) {
-        if (regionDTO.getName_uz() == null || regionDTO.getName_uz().isBlank()) {
+        if (regionDTO.getNameUz() == null || regionDTO.getNameUz().isBlank()) {
             throw new AppBadRequestException("uzbekcha Name qani?");
         }
-        if (regionDTO.getName_ru() == null || regionDTO.getName_ru().isBlank()) {
+        if (regionDTO.getNameRu() == null || regionDTO.getNameRu().isBlank()) {
             throw new AppBadRequestException("ruscha Name qani?");
         }
-        if (regionDTO.getName_eng() == null || regionDTO.getName_eng().isBlank()) {
+        if (regionDTO.getNameEng() == null || regionDTO.getNameEng().isBlank()) {
             throw new AppBadRequestException("englizcha Name qani?");
         }
         if (regionDTO.getOrder_number() == null) {
@@ -72,9 +64,9 @@ public class RegionService {
         RegionDTO dto = new RegionDTO();
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());
-        dto.setName_eng(entity.getName_eng());
-        dto.setName_ru(entity.getName_ru());
-        dto.setName_uz(entity.getName_uz());
+        dto.setNameEng(entity.getNameEng());
+        dto.setNameRu(entity.getNameRu());
+        dto.setNameRu(entity.getNameRu());
         dto.setOrder_number(entity.getOrder_number());
         dto.setVisible(entity.getVisible());
         return dto;
@@ -84,9 +76,9 @@ public class RegionService {
         RegionEntity entity = new RegionEntity();
         entity.setId(dto.getId());
         entity.setCreatedDate(dto.getCreatedDate());
-        entity.setName_eng(dto.getName_eng());
-        entity.setName_ru(dto.getName_ru());
-        entity.setName_uz(dto.getName_uz());
+        entity.setNameEng(dto.getNameEng());
+        entity.setNameRu(dto.getNameRu());
+        entity.setNameUz(dto.getNameUz());
         entity.setOrder_number(dto.getOrder_number());
         entity.setVisible(dto.getVisible());
         return entity;
@@ -112,7 +104,7 @@ public class RegionService {
                 RegionMapper regionMapper = new RegionMapper();
                 regionMapper.setId(regionEntity.getId());
                 regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getName_ru());
+                regionMapper.setName(regionEntity.getNameRu());
                 list.add(regionMapper);
             });
         } else if (lang.startsWith("eng")) {
@@ -120,7 +112,7 @@ public class RegionService {
                 RegionMapper regionMapper = new RegionMapper();
                 regionMapper.setId(regionEntity.getId());
                 regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getName_eng());
+                regionMapper.setName(regionEntity.getNameEng());
                 list.add(regionMapper);
             });
         } else if (lang.startsWith("uz")) {
@@ -128,7 +120,7 @@ public class RegionService {
                 RegionMapper regionMapper = new RegionMapper();
                 regionMapper.setId(regionEntity.getId());
                 regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getName_uz());
+                regionMapper.setName(regionEntity.getNameUz());
                 list.add(regionMapper);
             });
         } else {

@@ -9,11 +9,11 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ArticleTypeDTO {
-    private UUID id;
+    private Integer id;
     private Integer order_number;
-    private String name_uz;
-    private String name_ru;
-    private String name_eng;
+    private String nameUz;
+    private String nameRu;
+    private String nameEng;
     private Boolean visible;
     private LocalDateTime createdDate;
 }
