@@ -2,18 +2,13 @@ package com.example.controller;
 
 import com.example.dto.CategoryDTO;
 import com.example.dto.JwtDTO;
-import com.example.dto.RegionDTO;
-import com.example.dto.RegionJwtDTO;
 import com.example.enums.ProfileRole;
 import com.example.service.CategoryService;
 import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/category")

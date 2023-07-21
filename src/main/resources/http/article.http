@@ -1,0 +1,12 @@
+POST localhost:8080/api/v1/article/admin
+Content-Type:  application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk4NDk3ODMsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk4NTMzODMsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.IZwtM5GC2qCUl8qsKX6cc_MCvFIMBfM3EPukE9rPv-9ar5rbS2WNI1I8KH1qkriit0QaGNl5zQrYLa645Xbayw
+
+{
+  "title": "title1",
+  "description": "description1",
+  "content": "content1",
+  "sharedCount": "1",
+  "region_id": "1",
+  "category_id": "1"
+}
