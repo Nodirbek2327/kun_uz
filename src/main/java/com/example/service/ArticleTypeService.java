@@ -1,7 +1,9 @@
 package com.example.service;
 
 import com.example.dto.ArticleTypeDTO;
+import com.example.dto.CategoryDTO;
 import com.example.entity.ArticleTypeEntity;
+import com.example.entity.CategoryEntity;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.mapper.RegionMapper;
@@ -9,6 +11,7 @@ import com.example.repository.ArticleTypeRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -21,14 +24,13 @@ public class ArticleTypeService {
     @Autowired
     private ArticleTypeRepository articleTypeRepository;
 
-
     public ArticleTypeDTO createWithJwt(ArticleTypeDTO dto, Integer prtId) {
         check(dto);
         ArticleTypeEntity entity = new ArticleTypeEntity();
         entity.setNameUz(dto.getNameUz());
         entity.setNameRu(dto.getNameRu());
         entity.setNameEng(dto.getNameEng());
-        entity.setAtId(prtId);
+        entity.setPrtId(prtId);
         articleTypeRepository.save(entity);
 
         dto.setId(entity.getId());
@@ -50,32 +52,16 @@ public class ArticleTypeService {
         return articleTypeRepository.findById(id).orElseThrow(() -> new AppBadRequestException("Profile not found"));
     }
 
-    public ArticleTypeDTO add(ArticleTypeDTO dto) {
-       // dto.setCreatedDate(LocalDateTime.now());
-        check(dto);
-        ArticleTypeEntity entity = toEntity(dto);
-        articleTypeRepository.save(entity);
-        dto.setId(entity.getId());
-        return dto;
-    }
-
-    public Boolean update(Integer id, ArticleTypeDTO categoryDTO) {
-        check(categoryDTO);
-        int effectedRows = articleTypeRepository.updateAttribute(id, toEntity(categoryDTO));
-        return effectedRows > 0;
-    }
-
     public Boolean delete(Integer id) {
-      return articleTypeRepository.delete(id)==1;
+        return articleTypeRepository.delete(id)==1;
     }
 
-    public List<ArticleTypeDTO> getAll() {
-        Iterable<ArticleTypeEntity> iterable = articleTypeRepository.findAll();
-        List<ArticleTypeDTO> dtoList = new LinkedList<>();
-        iterable.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
-        return dtoList;
+
+    public PageImpl<ArticleTypeDTO> regionPagination(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<ArticleTypeEntity> pageObj = articleTypeRepository.findAll(pageable);
+        return new PageImpl<>(getArticleTypeDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
 
     public List<RegionMapper> getByLanguage(String lang) {

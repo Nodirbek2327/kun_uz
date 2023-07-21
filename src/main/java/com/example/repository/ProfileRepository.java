@@ -17,6 +17,10 @@ public interface ProfileRepository extends CrudRepository<ProfileEntity, Integer
     @Query("UPDATE ProfileEntity e SET e = :newEntity WHERE e.id = :entityId")
     int updateAttribute(@Param("entityId") Integer entityId, @Param("newEntity") ProfileEntity newEntity);
 
+    @Transactional
+    @Modifying
+    @Query("update ProfileEntity  set name =?2, surname =?3 where id =?1")
+    int updateDetail(Integer id, String name, String surname);
     Optional<ProfileEntity> findByPhone(String phone);
     @Transactional
     @Modifying

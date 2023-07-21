@@ -3,7 +3,9 @@ package com.example.service;
 import com.example.dto.FilterDTO;
 import com.example.dto.ProfileDTO;
 import com.example.dto.ProfileFilterDTO;
+import com.example.dto.RegionDTO;
 import com.example.entity.ProfileEntity;
+import com.example.entity.RegionEntity;
 import com.example.enums.ProfileStatus;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
@@ -53,15 +55,21 @@ public class ProfileService {
         return dto;
     }
 
-    public Boolean update2(Integer profileId, ProfileDTO dto) {
+//    public Boolean update2(Integer profileId, ProfileDTO dto) {
+//        check(dto); // check
+//        ProfileEntity entity = get(profileId); // get
+//        entity.setName(dto.getName());
+//        entity.setSurname(dto.getSurname());
+//        entity.setEmail(dto.getEmail());
+//        entity.setPhone(dto.getPhone());
+//        profileRepository.save(entity);
+//        return true;
+//    }
+
+    public Boolean updateDetail(Integer profileId, ProfileDTO dto) {
         check(dto); // check
-        ProfileEntity entity = get(profileId); // get
-        entity.setName(dto.getName());
-        entity.setSurname(dto.getSurname());
-        entity.setEmail(dto.getEmail());
-        entity.setPhone(dto.getPhone());
-        profileRepository.save(entity);
-        return true;
+        int effectedRows = profileRepository.updateDetail(profileId, dto.getName(), dto.getSurname());
+        return effectedRows == 1;
     }
 
     public ProfileEntity get(Integer profileId) {
@@ -70,7 +78,9 @@ public class ProfileService {
 
 
     public ProfileDTO add(ProfileDTO dto) {
-        //dto.setCreatedDate(LocalDateTime.now());
+        dto.setCreatedDate(LocalDateTime.now());
+        dto.setStatus(ProfileStatus.ACTIVE);
+        dto.setVisible(true);
         check(dto);
         ProfileEntity entity = toEntity(dto);
         profileRepository.save(entity);
@@ -118,7 +128,7 @@ public class ProfileService {
 
     public ProfileDTO toDTO(ProfileEntity entity){
         ProfileDTO dto = new ProfileDTO();
-        dto.setId(entity.getId());
+       // dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setSurname(entity.getSurname());
         dto.setRole(entity.getRole());
@@ -144,7 +154,7 @@ public class ProfileService {
      //   entity.setPhoto_id(dto.getPhoto_id());
         entity.setVisible(dto.getVisible());
         entity.setPhone(dto.getPhone());
-        entity.setPassword(dto.getPassword());
+        entity.setPassword(MD5Util.encode(dto.getPassword()));
         return entity;
     }
 
@@ -158,8 +168,5 @@ public class ProfileService {
         });
         return dtoList;
     }
-
-
-
 
 }

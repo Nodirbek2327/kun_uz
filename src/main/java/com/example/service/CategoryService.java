@@ -7,6 +7,7 @@ import com.example.exp.ItemNotFoundException;
 import com.example.mapper.RegionMapper;
 import com.example.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -23,7 +24,7 @@ public class CategoryService {
         entity.setNameUz(dto.getNameUz());
         entity.setNameRu(dto.getNameRu());
         entity.setNameEng(dto.getNameEng());
-        entity.setCId(prtId);
+        entity.setPrtId(prtId);
         categoryRepository.save(entity);
 
         dto.setId(entity.getId());
@@ -45,32 +46,16 @@ public class CategoryService {
         return categoryRepository.findById(id).orElseThrow(() -> new AppBadRequestException("Profile not found"));
     }
 
-    public CategoryDTO add(CategoryDTO dto) {
-        //dto.setCreatedDate(LocalDateTime.now());
-        check(dto);
-        CategoryEntity entity = toEntity(dto);
-        categoryRepository.save(entity);
-        dto.setId(entity.getId());
-        return dto;
-    }
-
-    public Boolean update(Integer id, CategoryDTO categoryDTO) {
-        check(categoryDTO);
-        int effectedRows = categoryRepository.updateAttribute(id, toEntity(categoryDTO));
-        return effectedRows > 0;
-    }
-
     public Boolean delete(Integer id) {
-        return  categoryRepository.delete(id)==1;
+        return categoryRepository.delete(id)==1;
     }
 
-    public List<CategoryDTO> getAll() {
-        Iterable<CategoryEntity> iterable = categoryRepository.findAll();
-        List<CategoryDTO> dtoList = new LinkedList<>();
-        iterable.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
-        return dtoList;
+
+    public PageImpl<CategoryDTO> regionPagination(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<CategoryEntity> pageObj = categoryRepository.findAll(pageable);
+        return new PageImpl<>(getCategoryDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
 
     public List<RegionMapper> getByLanguage(String lang) {

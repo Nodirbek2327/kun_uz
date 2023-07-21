@@ -7,6 +7,7 @@ import com.example.dto.RegionJwtDTO;
 import com.example.enums.ProfileRole;
 import com.example.service.RegionService;
 import com.example.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,36 +20,23 @@ import java.util.List;
 public class RegionController {
     @Autowired
     private RegionService regionService;
-
-    @PostMapping(value = {""})
-    public ResponseEntity<?> create(@RequestBody RegionDTO dto,
-                                    @RequestHeader("Authorization") String authToken) {
-        RegionJwtDTO regionJwtDTO = SecurityUtil.getRegionJwtDTO(authToken);
-        return ResponseEntity.ok(regionService.createWithJwt(dto, regionJwtDTO.getId()));
+    @PostMapping(value = {"/admin"})
+    public ResponseEntity<?> create(@RequestBody RegionDTO dto, HttpServletRequest request) {
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        return ResponseEntity.ok(regionService.createWithJwt(dto, jwtDTO.getId()));
     }
 
-    @PutMapping(value = "/update/jwt")
+    @PutMapping(value = "/admin/update")
     public ResponseEntity<Boolean> update(@RequestBody RegionDTO dto,
-                                          @RequestHeader("Authorization") String authToken) {
-        RegionJwtDTO regionJwtDTO = SecurityUtil.getRegionJwtDTO(authToken);
-        return ResponseEntity.ok(regionService.updateWithJwt(regionJwtDTO.getId(), dto));
+                                          @PathVariable("id") Integer id,
+                                          HttpServletRequest request) {
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        return ResponseEntity.ok(regionService.updateWithJwt(id, dto));
     }
 
-
-    @PostMapping(value = "/create")
-    public ResponseEntity<?> create(@RequestBody RegionDTO profileDTO) {
-        RegionDTO response = regionService.add(profileDTO);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/update")
-    public ResponseEntity<?> update(@RequestParam("id") Integer id,
-                                    @RequestBody RegionDTO regionDTO) {
-        return ResponseEntity.ok(regionService.update(id, regionDTO));
-    }
-
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity<String> delete(@RequestParam("id") Integer id) {
+    @DeleteMapping(value = "admin/delete")
+    public ResponseEntity<String> delete(@RequestParam("id") Integer id,  HttpServletRequest request) {
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         Boolean response = regionService.delete(id);
         if (response) {
             return ResponseEntity.ok("region deleted");
@@ -56,9 +44,12 @@ public class RegionController {
         return ResponseEntity.badRequest().body("region Not Found");
     }
 
-    @GetMapping("/all")
-    public List<RegionDTO> all() {
-        return regionService.getAll();
+    @GetMapping(value = "admin/pagination")
+    public ResponseEntity<?> pagination(@RequestParam("from") int from,
+                                        @RequestParam("to") int to,
+                                        HttpServletRequest request) {
+        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+        return ResponseEntity.ok(regionService.regionPagination(from-1, to));
     }
 
     @GetMapping(value = "/language")

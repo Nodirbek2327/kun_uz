@@ -35,6 +35,7 @@ public class ProfileEntity {
     private Boolean visible = true;
     @Column(name = "created_date")
     private LocalDateTime createdDate = LocalDateTime.now();
+    @Column(name = "prt_id")
     private Integer prtId;
    // private Integer photo_id;
 }

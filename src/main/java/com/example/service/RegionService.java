@@ -1,21 +1,17 @@
 package com.example.service;
 
-import com.example.dto.ProfileDTO;
 import com.example.dto.RegionDTO;
-import com.example.entity.ProfileEntity;
 import com.example.entity.RegionEntity;
-import com.example.enums.ProfileStatus;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.mapper.RegionMapper;
 import com.example.repository.RegionRepository;
-import com.example.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RegionService {
@@ -29,7 +25,7 @@ public class RegionService {
         entity.setNameUz(dto.getNameUz());
         entity.setNameRu(dto.getNameRu());
         entity.setNameEng(dto.getNameEng());
-        entity.setRId(prtId);
+        entity.setPrtId(prtId);
         regionRepository.save(entity);
 
         dto.setId(entity.getId());
@@ -51,33 +47,26 @@ public class RegionService {
         return regionRepository.findById(id).orElseThrow(() -> new AppBadRequestException("Profile not found"));
     }
 
-    public RegionDTO add(RegionDTO dto) {
-      //  dto.setCreatedDate(LocalDateTime.now());
-        check(dto);
-        RegionEntity entity = toEntity(dto);
-        regionRepository.save(entity);
-        dto.setId(entity.getId());
-        return dto;
-    }
-
-    public Boolean update(Integer id, RegionDTO profileDTO) {
-        check(profileDTO);
-        int effectedRows = regionRepository.updateAttribute(id, toEntity(profileDTO));
-        return effectedRows > 0;
-    }
-
     public Boolean delete(Integer id) {
        return regionRepository.delete(id)==1;
     }
 
-    public List<RegionDTO> getAll() {
-        Iterable<RegionEntity> iterable = regionRepository.findAll();
-        List<RegionDTO> dtoList = new LinkedList<>();
-        iterable.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
-        return dtoList;
+
+    public PageImpl<RegionDTO> regionPagination(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<RegionEntity> pageObj = regionRepository.findAll(pageable);
+        return new PageImpl<>(getProfileDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
+
+//    public List<RegionDTO> getAll() {
+//        Iterable<RegionEntity> iterable = regionRepository.findAll();
+//        List<RegionDTO> dtoList = new LinkedList<>();
+//        iterable.forEach(entity -> {
+//            dtoList.add(toDTO(entity));
+//        });
+//        return dtoList;
+//    }
 
     private void check(RegionDTO regionDTO) {
         if (regionDTO.getNameUz() == null || regionDTO.getNameUz().isBlank()) {

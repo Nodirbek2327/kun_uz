@@ -23,6 +23,7 @@ public class RegionEntity {
     private String nameEng;
     @Column(nullable = false)
     private Boolean visible=true;
-    private Integer rId;
+    @Column(name = "prt_id")
+    private Integer prtId;
     private LocalDateTime createdDate= LocalDateTime.now();
 }
