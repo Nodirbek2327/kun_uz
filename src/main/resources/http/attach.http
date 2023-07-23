@@ -1,0 +1,19 @@
+POST http://localhost:8080/api/v1/attach/upload2
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="dog.jpg"
+
+< C:\Users\Nodirbek\Pictures\Saved Pictures\dog.jpg
+
+
+### get image
+GET http://localhost:8080/api/v1/attach/open/dog.jpg
+
+
+
+### get image by id
+GET http://localhost:8080/api/v1/attach/open/9953b3dc-dc1c-4bba-b145-48ccad938a22/img
+
+### get general by id
+GET http://localhost:8080/api/v1/attach/open/9953b3dc-dc1c-4bba-b145-48ccad938a22/general

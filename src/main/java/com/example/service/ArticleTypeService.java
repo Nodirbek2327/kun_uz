@@ -31,6 +31,7 @@ public class ArticleTypeService {
         entity.setNameRu(dto.getNameRu());
         entity.setNameEng(dto.getNameEng());
         entity.setPrtId(prtId);
+        entity.setOrder_number(dto.getOrder_number());
         articleTypeRepository.save(entity);
 
         dto.setId(entity.getId());

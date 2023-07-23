@@ -25,6 +25,7 @@ public class CategoryService {
         entity.setNameRu(dto.getNameRu());
         entity.setNameEng(dto.getNameEng());
         entity.setPrtId(prtId);
+        entity.setOrder_number(dto.getOrder_number());
         categoryRepository.save(entity);
 
         dto.setId(entity.getId());

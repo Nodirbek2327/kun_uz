@@ -1,67 +1,65 @@
 package com.example.service;
 
-import com.example.dto.RegionDTO;
-import com.example.entity.RegionEntity;
+import com.example.dto.TagDTO;
+import com.example.entity.TagEntity;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.mapper.RegionMapper;
-import com.example.repository.RegionRepository;
+import com.example.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class RegionService {
+public class TagService {
     @Autowired
-    private RegionRepository regionRepository;
+    private TagRepository tagRepository;
 
-
-    public RegionDTO createWithJwt(RegionDTO dto, Integer prtId) {
+    public TagDTO createWithJwt(TagDTO dto, Integer prtId) {
         check(dto);
-        RegionEntity entity = new RegionEntity();
+        TagEntity entity = new TagEntity();
         entity.setNameUz(dto.getNameUz());
         entity.setNameRu(dto.getNameRu());
         entity.setNameEng(dto.getNameEng());
         entity.setPrtId(prtId);
         entity.setOrder_number(dto.getOrder_number());
-        regionRepository.save(entity);
+        tagRepository.save(entity);
 
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
     }
 
-    public Boolean updateWithJwt(Integer id, RegionDTO dto) {
+    public Boolean updateWithJwt(Integer id, TagDTO dto) {
         check(dto); // check
-        RegionEntity entity = get(id); // get
+        TagEntity entity = get(id); // get
         entity.setNameEng(dto.getNameEng());
         entity.setNameRu(dto.getNameRu());
         entity.setNameUz(dto.getNameUz());
-        regionRepository.save(entity);
+        tagRepository.save(entity);
         return true;
     }
 
-    public RegionEntity get(Integer id) {
-        return regionRepository.findById(id).orElseThrow(() -> new AppBadRequestException("Profile not found"));
+    public TagEntity get(Integer id) {
+        return tagRepository.findById(id).orElseThrow(() -> new AppBadRequestException("tag not found"));
     }
 
     public Boolean delete(Integer id) {
-       return regionRepository.delete(id)==1;
+        return tagRepository.delete(id)==1;
     }
 
 
-    public PageImpl<RegionDTO> regionPagination(int page, int size) {
+    public PageImpl<TagDTO> regionPagination(int page, int size) {
         Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<RegionEntity> pageObj = regionRepository.findAll(pageable);
+        Page<TagEntity> pageObj = tagRepository.findAll(pageable);
         return new PageImpl<>(getProfileDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
 
-    private void check(RegionDTO regionDTO) {
+    private void check(TagDTO regionDTO) {
         if (regionDTO.getNameUz() == null || regionDTO.getNameUz().isBlank()) {
             throw new AppBadRequestException("uzbekcha Name qani?");
         }
@@ -76,8 +74,8 @@ public class RegionService {
         }
     }
 
-    public RegionDTO toDTO(RegionEntity entity) {
-        RegionDTO dto = new RegionDTO();
+    public TagDTO toDTO(TagEntity entity) {
+        TagDTO dto = new TagDTO();
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());
         dto.setNameEng(entity.getNameEng());
@@ -88,8 +86,8 @@ public class RegionService {
         return dto;
     }
 
-    public RegionEntity toEntity(RegionDTO dto) {
-        RegionEntity entity = new RegionEntity();
+    public TagEntity toEntity(TagDTO dto) {
+        TagEntity entity = new TagEntity();
         entity.setId(dto.getId());
         entity.setCreatedDate(dto.getCreatedDate());
         entity.setNameEng(dto.getNameEng());
@@ -100,11 +98,11 @@ public class RegionService {
         return entity;
     }
 
-    private List<RegionDTO> getProfileDTOS(List<RegionEntity> list) {
+    private List<TagDTO> getProfileDTOS(List<TagEntity> list) {
         if (list.isEmpty()) {
             throw new ItemNotFoundException("region not found");
         }
-        List<RegionDTO> dtoList = new LinkedList<>();
+        List<TagDTO> dtoList = new LinkedList<>();
         list.forEach(entity -> {
             dtoList.add(toDTO(entity));
         });
@@ -113,7 +111,7 @@ public class RegionService {
 
 
     public List<RegionMapper> getByLanguage(String lang) {
-        Iterable<RegionEntity> iterable = regionRepository.findAll();
+        Iterable<TagEntity> iterable = tagRepository.findAll();
         List<RegionMapper> list = new LinkedList<>();
         if (lang.startsWith("ru")) {
             iterable.forEach(regionEntity -> {

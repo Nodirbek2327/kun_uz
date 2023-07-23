@@ -2,21 +2,15 @@ package com.example.controller;
 
 import com.example.dto.ArticleDTO;
 import com.example.dto.JwtDTO;
-import com.example.dto.ProfileDTO;
-import com.example.dto.ProfileFilterDTO;
 import com.example.enums.ProfileRole;
 import com.example.service.ArticleService;
-import com.example.service.ProfileService;
 import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/article")
@@ -32,14 +26,14 @@ public class ArticleController {
 
     @PutMapping(value = "/admin/{id}")
     public ResponseEntity<Boolean> update(@RequestBody ArticleDTO dto,
-                                          @PathVariable("id") UUID id,
+                                          @PathVariable("id") String id,
                                           HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
         return ResponseEntity.ok(articleService.update(id, dto));
     }
 
     @DeleteMapping(value = "/admin/delete")
-    public ResponseEntity<String> delete(@RequestParam("id") UUID id,
+    public ResponseEntity<String> delete(@RequestParam("id") String id,
                                          HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
         Boolean response = articleService.delete(id);
@@ -50,7 +44,7 @@ public class ArticleController {
     }
 
     @PutMapping(value = "/admin/changeStatus")
-    public ResponseEntity<String> changeStatus(@RequestParam("id") UUID id,
+    public ResponseEntity<String> changeStatus(@RequestParam("id") String id,
                                          HttpServletRequest request) {
         SecurityUtil.hasRole(request, ProfileRole.PUBLISHER);
         Boolean response = articleService.changeStatus(id);
@@ -61,23 +55,23 @@ public class ArticleController {
     }
 
     @GetMapping(value = "/last5")
-    public ResponseEntity<?> getLast5() {
-        return ResponseEntity.ok(articleService.getLast5());
+    public ResponseEntity<?> getLast5(@RequestParam("id") Integer typeId) {
+        return ResponseEntity.ok(articleService.getLast5(typeId));
     }
 
     @GetMapping(value = "/last3")
-    public ResponseEntity<?> getLast3() {
-        return ResponseEntity.ok(articleService.getLast3());
+    public ResponseEntity<?> getLast3(@RequestParam("id") Integer typeId) {
+        return ResponseEntity.ok(articleService.getLast3(typeId));
     }
 
     @GetMapping(value = "/last8")
-    public ResponseEntity<?> getLast8(@RequestBody List<UUID> ids) {
+    public ResponseEntity<?> getLast8(@RequestBody List<String> ids) {
         return ResponseEntity.ok(articleService.getLast8(ids));
     }
 
     @GetMapping(value = "/last4")
-    public ResponseEntity<?> getLast4(@RequestBody  UUID id) {
-        return ResponseEntity.ok(articleService.getLast4(id));
+    public ResponseEntity<?> getLast4(@RequestParam("typeId") Integer typeId, @RequestParam("articleId") String artcileId) {
+        return ResponseEntity.ok(articleService.getLast4(typeId, artcileId));
     }
 
     @GetMapping(value = "/mostRead")
@@ -85,8 +79,35 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.mostRead4());
     }
 
+    @GetMapping(value = "/last4")
+    public ResponseEntity<?> getLast4ByTag(@RequestParam("tagName") String tagName) {
+        return ResponseEntity.ok(articleService.getLast4ByTag(tagName));
+    }
+
+    @GetMapping(value = "/last5")
+    public ResponseEntity<?> getLast5ByTypeAndRegion(@RequestParam("type") String type, @RequestParam("regionId") Integer regionId ) {
+        return ResponseEntity.ok(articleService.getLast5ByTypeAndRegion(type, regionId));
+    }
+
+    @GetMapping(value = "/paginationByRegion")
+    public ResponseEntity<?> paginationByRegion(@RequestParam("regionId") Integer regionId,
+                                        @RequestParam("from") int from,
+                                        @RequestParam("to") int to) {
+        return ResponseEntity.ok(articleService.getListByRegionPagination(regionId, to, from-1));
+    }
+
+    @GetMapping(value = "/last5ByCategory")
+    public ResponseEntity<?> getLast4ByCategory(@RequestParam("categoryId") Integer categoryId) {
+        return ResponseEntity.ok(articleService.getLast5ByCategory(categoryId));
+    }
 
 
+    @GetMapping(value = "/paginationByCategory")
+    public ResponseEntity<?> paginationByCategory(@RequestParam("categoryId") Integer categoryId,
+                                        @RequestParam("from") int from,
+                                        @RequestParam("to") int to) {
+        return ResponseEntity.ok(articleService.getListByCategoryPagination(categoryId, to, from-1));
+    }
 
 
 //    @GetMapping(value = "admin/pagination")

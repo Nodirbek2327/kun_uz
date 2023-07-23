@@ -1,28 +1,22 @@
 package com.example.service;
 
-import com.example.dto.ArticleDTO;
-import com.example.dto.FilterDTO;
-import com.example.dto.ProfileDTO;
-import com.example.dto.ProfileFilterDTO;
+import com.example.dto.*;
 import com.example.entity.ArticleEntity;
-import com.example.entity.ProfileEntity;
+import com.example.entity.RegionEntity;
 import com.example.enums.ArticleStatus;
-import com.example.enums.ProfileStatus;
 import com.example.exp.AppBadRequestException;
-import com.example.exp.ItemNotFoundException;
+import com.example.mapper.ArticleShortInfoMapper;
 import com.example.repository.ArticleRepository;
 import com.example.repository.CustomRepository;
-import com.example.repository.ProfileRepository;
-import com.example.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ArticleService {
@@ -54,45 +48,66 @@ public class ArticleService {
         return dto;
     }
 
-    public Boolean update(UUID id, ArticleDTO articleDTO) {
+    public Boolean update(String id, ArticleDTO articleDTO) {
         check(articleDTO);
         int effectedRows = articleRepository.updateAttribute(id,  toEntity(articleDTO));
         return effectedRows>0;
     }
 
-    public Boolean delete(UUID id) {
+    public Boolean delete(String id) {
         return articleRepository.delete(id)==1;
     }
 
-    public Boolean changeStatus(UUID id) {
+    public Boolean changeStatus(String id) {
         return articleRepository.changeStatus(id, String.valueOf(ArticleStatus.Published))==1;
     }
 
-    public List<ArticleDTO> getLast5() {
-        List<ArticleEntity> entityList = articleRepository.getTop5();
-        return getArticleDTOS(entityList);
+    public List<ArticleShortInfoMapper> getLast5(Integer typeId) {
+        return articleRepository.getLast5(typeId);
     }
 
-    public List<ArticleDTO> getLast3() {
-        List<ArticleEntity> entityList = articleRepository.getTop3();
-        return getArticleDTOS(entityList);
+    public List<ArticleShortInfoMapper> getLast3(Integer typeId) {
+        return articleRepository.getLast3(typeId);
     }
 
-    public List<ArticleDTO> getLast8(List<UUID> excludedIds) {
-        List<ArticleEntity> entityList = articleRepository.getLast8(excludedIds);
-        return getArticleDTOS(entityList);
+    public List<ArticleShortInfoMapper> getLast8(List<String> excludedIds) {
+        return articleRepository.getLast8(excludedIds);
     }
 
-    public List<ArticleDTO> getLast4(UUID id) {
-        List<ArticleEntity> entityList = articleRepository.getLast4(id);
-        return getArticleDTOS(entityList);
+    public List<ArticleShortInfoMapper> getLast4(Integer typeId, String id) {
+        return articleRepository.getLast4(typeId, id);
+    }
+
+    public List<ArticleShortInfoMapper> mostRead4() {
+        return articleRepository.mostRead4();
+    }
+
+    public List<ArticleShortInfoMapper> getLast4ByTag(String tagName) {
+        return articleRepository.getLast4ByTag(tagName);
+    }
+
+    public List<ArticleShortInfoMapper> getLast5ByTypeAndRegion(String type, Integer regionId) {
+        return articleRepository.getLast5ByTypeAndRegion(regionId, type);
+    }
+
+    public PageImpl<ArticleShortInfoMapper> getListByRegionPagination(Integer regionId, int size, int page) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ArticleShortInfoMapper> pageObj = articleRepository.getListRegionPagination(regionId, pageable);
+        return new PageImpl<>(pageObj.getContent(), pageable, pageObj.getTotalElements());
+    }
+
+    public List<ArticleShortInfoMapper> getLast5ByCategory(Integer id) {
+        return articleRepository.getLast5ByCategory(id);
     }
 
 
-    public List<ArticleDTO> mostRead4() {
-        List<ArticleEntity> entityList = articleRepository.mostRead4();
-        return getArticleDTOS(entityList);
+    public PageImpl<ArticleShortInfoMapper> getListByCategoryPagination(Integer categoryId, int size, int page) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ArticleShortInfoMapper> pageObj = articleRepository.getListCategoryPagination(categoryId, pageable);
+        return new PageImpl<>(pageObj.getContent(), pageable, pageObj.getTotalElements());
     }
+
+
 
 
     private void check(ArticleDTO articleDTO) {
@@ -150,17 +165,6 @@ public class ArticleService {
         entity.setPublishedDate(dto.getPublishedDate());
         entity.setPublisherId(dto.getPublisherId());
         return entity;
-    }
-
-    private List<ArticleDTO> getArticleDTOS(List<ArticleEntity> list) {
-        if (list.isEmpty()) {
-            throw  new ItemNotFoundException("article not found");
-        }
-        List<ArticleDTO> dtoList = new LinkedList<>();
-        list.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
-        return dtoList;
     }
 
 

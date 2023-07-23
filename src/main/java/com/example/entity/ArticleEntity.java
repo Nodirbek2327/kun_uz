@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
 @Setter
 @Getter
@@ -14,24 +14,46 @@ import java.util.UUID;
 @Table(name = "article")
 public class ArticleEntity {
     @Id
-    private UUID id;
+    private String id;
     private String title;
     private String description;
     private String content;
     @Column(name = "shared_count")
     private Long sharedCount;
-    @ManyToOne
-    @JoinColumn(name = "region_id")
-    private RegionEntity regionId;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private CategoryEntity categoryId;
+    @ManyToMany
+    @JoinTable(
+            name = "region_id",
+            joinColumns = @JoinColumn(name = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id")
+    )
+    private List<RegionEntity> regionId;
+    @ManyToMany
+    @JoinTable(
+            name = "category_id",
+            joinColumns = @JoinColumn(name = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id")
+    )
+    private List<CategoryEntity> categoryId;
     @ManyToOne
     @JoinColumn(name = "moderator_id")
     private ProfileEntity moderatorId;
     @ManyToOne
     @JoinColumn(name = "publisher_id")
     private ProfileEntity publisherId;
+    @ManyToMany
+    @JoinTable(
+            name = "article_types",
+            joinColumns = @JoinColumn(name = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id")
+    )
+    private List<ArticleTypeEntity> articleTypes;
+    @ManyToMany
+    @JoinTable(
+            name = "article_tags",
+            joinColumns = @JoinColumn(name = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id")
+    )
+    private List<TagEntity> articleTags;
     @Enumerated(value = EnumType.STRING)
     private ArticleStatus status;
     @Column(name = "created_date")
