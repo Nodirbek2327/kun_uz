@@ -3,8 +3,10 @@ package com.example.service;
 import com.example.dto.AttachDTO;
 import com.example.entity.AttachEntity;
 import com.example.exp.AppBadRequestException;
+import com.example.exp.ItemNotFoundException;
 import com.example.repository.AttachRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,8 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Calendar;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AttachService {
@@ -157,4 +158,54 @@ public class AttachService {
         int lastIndex = fileName.lastIndexOf(".");
         return fileName.substring(lastIndex + 1);
     }
+
+    public PageImpl<AttachDTO> attachPagination(int page, int size) {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<AttachEntity> pageObj = attachRepository.findAll(pageable);
+            return new PageImpl<>(getAttachDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
+    }
+
+    public boolean delete(String id) {
+        Optional<AttachEntity> optional = attachRepository.findById(id);
+        if (optional.isPresent()){
+            return false;
+        }
+        AttachEntity entity = optional.get();
+        Path path = Paths.get(folderName + "/" + entity.getPath() + "/" + entity.getId() + "." + entity.getExtension());
+        try {
+            File fileToDelete = new File(path.toUri());
+            attachRepository.deleteById(id);
+            return fileToDelete.delete();
+        } catch (Exception e) {
+            System.out.println("Error occurred while deleting the file: " + e.getMessage());
+        }
+      return true;
+    }
+
+
+
+
+    private List<AttachDTO> getAttachDTOS(List<AttachEntity> list) {
+        if (list.isEmpty()) {
+            throw  new ItemNotFoundException("attach not found");
+        }
+        List<AttachDTO> dtoList = new LinkedList<>();
+        list.forEach(entity -> {
+            dtoList.add(toDTO(entity));
+        });
+        return dtoList;
+    }
+
+    private AttachDTO toDTO(AttachEntity entity) {
+        AttachDTO dto = new AttachDTO();
+        dto.setSize(entity.getSize());
+        dto.setPath(entity.getPath());
+        dto.setId(entity.getId());
+        dto.setOriginalName(entity.getOriginalName());
+        dto.setExtension(entity.getExtension());
+        dto.setCreatedData(entity.getCreatedData());
+        return dto;
+    }
+
+
 }

@@ -19,5 +19,5 @@ public class AttachEntity {
     private Long size;
     private String extension;
     @Column(name = "created_date")
-    private LocalDateTime createdData;
+    private LocalDateTime createdData=LocalDateTime.now();
 }
