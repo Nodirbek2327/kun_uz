@@ -1,5 +1,5 @@
 package com.example.enums;
 
 public enum ArticleStatus {
-    Published,NotPublished
+    PUBLISHED,NOT_PUBLISHED
 }

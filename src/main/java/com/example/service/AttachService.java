@@ -140,25 +140,6 @@ public class AttachService {
         return attachRepository.findById(id).orElseThrow(() -> new AppBadRequestException("Profile not found"));
     }
 
-
-
-
-
-
-
-    public String getYmDString() {
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-        int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
-        int day = Calendar.getInstance().get(Calendar.DATE);
-
-        return year + "/" + month + "/" + day; // 2022/04/23
-    }
-
-    public String getExtension(String fileName) { // mp3/jpg/npg/mp4.....
-        int lastIndex = fileName.lastIndexOf(".");
-        return fileName.substring(lastIndex + 1);
-    }
-
     public PageImpl<AttachDTO> attachPagination(int page, int size) {
             Pageable pageable = PageRequest.of(page, size);
             Page<AttachEntity> pageObj = attachRepository.findAll(pageable);
@@ -185,6 +166,8 @@ public class AttachService {
 
 
 
+
+
     private List<AttachDTO> getAttachDTOS(List<AttachEntity> list) {
         if (list.isEmpty()) {
             throw  new ItemNotFoundException("attach not found");
@@ -205,6 +188,19 @@ public class AttachService {
         dto.setExtension(entity.getExtension());
         dto.setCreatedData(entity.getCreatedData());
         return dto;
+    }
+
+    public String getYmDString() {
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
+        int day = Calendar.getInstance().get(Calendar.DATE);
+
+        return year + "/" + month + "/" + day; // 2022/04/23
+    }
+
+    public String getExtension(String fileName) { // mp3/jpg/npg/mp4.....
+        int lastIndex = fileName.lastIndexOf(".");
+        return fileName.substring(lastIndex + 1);
     }
 
 

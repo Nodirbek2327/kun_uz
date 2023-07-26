@@ -6,65 +6,65 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
 @Entity
 @Table(name = "article")
-public class ArticleEntity {
-    @Id
-    private String id;
+public class ArticleEntity extends BaseStringEntity {
+    @Column(nullable = false, unique = true)
     private String title;
+    @Column(nullable = false, columnDefinition = "text")
     private String description;
+    @Column(nullable = false, columnDefinition = "text")
     private String content;
     @Column(name = "shared_count")
-    private Long sharedCount;
-    @ManyToMany
-    @JoinTable(
-            name = "region_id",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id")
-    )
-    private List<RegionEntity> regionId;
-    @ManyToMany
-    @JoinTable(
-            name = "category_id",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id")
-    )
-    private List<CategoryEntity> categoryId;
-    @ManyToOne
-    @JoinColumn(name = "moderator_id")
-    private ProfileEntity moderatorId;
-    @ManyToOne
-    @JoinColumn(name = "publisher_id")
-    private ProfileEntity publisherId;
-    @ManyToMany
-    @JoinTable(
-            name = "article_types",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id")
-    )
-    private List<ArticleTypeEntity> articleTypes;
-    @ManyToMany
-    @JoinTable(
-            name = "article_tags",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id")
-    )
-    private List<TagEntity> articleTags;
-    @Enumerated(value = EnumType.STRING)
-    private ArticleStatus status;
-    @Column(name = "created_date")
-    private LocalDateTime createdDate=LocalDateTime.now();
+    private Integer sharedCount = 0;
+
+    @Column(name = "view_count")
+    private Integer viewCount = 0;
+
+    @Column(name = "image_id", nullable = false)
+    private String imageId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id", insertable = false, updatable = false)
+    private AttachEntity image;
+
+    @Column(name = "region_id", nullable = false)
+    private Integer regionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", insertable = false, updatable = false)
+    private RegionEntity region;
+
+    @Column(name = "category_id", nullable = false)
+    private Integer categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    private CategoryEntity category;
+
+    @Column(name = "moderator_id", nullable = false)
+    private Integer moderatorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moderator_id", insertable = false, updatable = false)
+    private ProfileEntity moderator;
+
+    @Column(name = "publisher_id", nullable = false)
+    private Integer publisherId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publisher_id", insertable = false, updatable = false)
+    private ProfileEntity publisher;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ArticleStatus status = ArticleStatus.NOT_PUBLISHED;
+
     @Column(name = "published_date")
     private LocalDateTime publishedDate;
-    private Boolean visible=true;
-    @Column(name = "view_count")
-    private Long viewCount=0l;
-    @Column(name = "prt_id")
-    private Integer prtId;
-    //    @Column(name = "image_id")
-//    private Integer imageId;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "article")
+    private Set<ArticleTypesEntity> articleTypeSet;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "article")
+    private Set<ArticleTagsEntity> articleTagSet;
 }

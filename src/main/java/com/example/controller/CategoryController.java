@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.CategoryDTO;
 import com.example.dto.JwtDTO;
+import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.CategoryService;
 import com.example.util.SecurityUtil;
@@ -50,7 +51,7 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/language")
-    public ResponseEntity<?> getByLanguage(@RequestParam("lang") String lang) {
+    public ResponseEntity<?> getByLanguage(@RequestParam("lang") Language lang) {
         return ResponseEntity.ok(categoryService.getByLanguage(lang));
     }
 }

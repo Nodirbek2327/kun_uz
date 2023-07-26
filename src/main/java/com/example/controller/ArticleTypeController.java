@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dto.ArticleTypeDTO;
 import com.example.dto.CategoryDTO;
 import com.example.dto.JwtDTO;
+import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.ArticleTypeService;
 import com.example.util.SecurityUtil;
@@ -51,7 +52,7 @@ public class ArticleTypeController {
     }
 
     @GetMapping(value = "/language")
-    public ResponseEntity<?> getByLanguage(@RequestParam("lang") String lang) {
+    public ResponseEntity<?> getByLanguage(@RequestParam("lang") Language lang) {
         return ResponseEntity.ok(articleTypeService.getByLanguage(lang));
     }
 }

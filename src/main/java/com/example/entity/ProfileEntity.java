@@ -16,26 +16,34 @@ import java.util.UUID;
 @Setter
 @Table(name = "profile")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProfileEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProfileEntity extends BaseEntity{
     private Integer id;
+
     private String name;
+
     private String surname;
+
     @Column(unique = true)
     private String email;
+
     @Column(unique = true)
     private String phone;
+
     @Column(nullable = false, unique = true)
     private String password;
+
     @Enumerated(value = EnumType.STRING)
     private ProfileStatus status;
+
     @Enumerated(value = EnumType.STRING)
     private ProfileRole role;
-    private Boolean visible = true;
-    @Column(name = "created_date")
-    private LocalDateTime createdDate = LocalDateTime.now();
+
     @Column(name = "prt_id")
     private Integer prtId;
-   // private Integer photo_id;
+
+    @Column(name = "image_id", nullable = false)
+    private String imageId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id", insertable = false, updatable = false)
+    private AttachEntity image;
 }

@@ -4,6 +4,7 @@ import com.example.dto.*;
 import com.example.entity.ArticleEntity;
 import com.example.entity.RegionEntity;
 import com.example.enums.ArticleStatus;
+import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.mapper.ArticleShortInfoMapper;
 import com.example.repository.ArticleRepository;
@@ -23,91 +24,117 @@ public class ArticleService {
     @Autowired
     private ArticleRepository articleRepository;
     @Autowired
-    private CustomRepository customRepository;
+    private ArticleTypesService articleTypesService;
+    @Autowired
+    private RegionService regionService;
 
-    public ArticleDTO create(ArticleDTO dto, Integer prtId) {
+    public ArticleDTO create(ArticleDTO dto, Integer moderatorId) {
         check(dto);
-        Optional<ArticleEntity> articleTitle = articleRepository.findByTitle(dto.getTitle());
-        if (articleTitle.isPresent()) {
-            throw new AppBadRequestException("title already exists");
-        }
-
         ArticleEntity entity = new ArticleEntity();
-        entity.setDescription(dto.getDescription());
-        entity.setContent(dto.getContent());
         entity.setTitle(dto.getTitle());
-        entity.setSharedCount(dto.getSharedCount());
+        entity.setContent(dto.getContent());
+        entity.setDescription(dto.getDescription());
+        entity.setImageId(dto.getImageId());
         entity.setRegionId(dto.getRegionId());
-        entity.setStatus(ArticleStatus.NotPublished);
         entity.setCategoryId(dto.getCategoryId());
-        entity.setPrtId(prtId);
-        articleRepository.save(entity);
-
+        entity.setModeratorId(moderatorId);
+        entity.setStatus(ArticleStatus.NOT_PUBLISHED);
+        articleRepository.save(entity); // save
+        articleTypesService.create(entity.getId(), dto.getArticleType()); // save type list
+        // response
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());
         return dto;
     }
 
-    public Boolean update(String id, ArticleDTO articleDTO) {
-        check(articleDTO);
-        int effectedRows = articleRepository.updateAttribute(id,  toEntity(articleDTO));
-        return effectedRows>0;
+    public ArticleDTO update(String id, ArticleDTO dto, Integer moderatorId) {
+        check(dto);
+        ArticleEntity entity = get(id);
+        entity.setTitle(dto.getTitle());
+        entity.setContent(dto.getContent());
+        entity.setDescription(dto.getDescription());
+        entity.setImageId(dto.getImageId());
+        entity.setRegionId(dto.getRegionId());
+        entity.setCategoryId(dto.getCategoryId());
+        entity.setStatus(ArticleStatus.NOT_PUBLISHED);
+        articleRepository.save(entity); // save
+
+        articleTypesService.merge(entity.getId(), dto.getArticleType()); // save type list
+        // response
+        dto.setId(entity.getId());
+        dto.setCreatedDate(entity.getCreatedDate());
+        return dto;
     }
 
+    public ArticleEntity get(String id) {
+        return articleRepository.findById(id).orElseThrow(() -> {
+            throw new AppBadRequestException("Article not found");
+        });
+    }
     public Boolean delete(String id) {
         return articleRepository.delete(id)==1;
     }
 
     public Boolean changeStatus(String id) {
-        return articleRepository.changeStatus(id, String.valueOf(ArticleStatus.Published))==1;
+        return articleRepository.changeStatus(id, String.valueOf(ArticleStatus.PUBLISHED))==1;
     }
 
-    public List<ArticleShortInfoMapper> getLast5(Integer typeId) {
-        return articleRepository.getLast5(typeId);
+    public List<ArticleShortInfoMapper> getLast5ByTypes(Integer typeId) {
+        return articleRepository.getLast5ArticleByArticleTypeIdNative(typeId, 5);
     }
 
-    public List<ArticleShortInfoMapper> getLast3(Integer typeId) {
-        return articleRepository.getLast3(typeId);
+    public List<ArticleShortInfoMapper> getLast3Types(Integer typeId) {
+        return articleRepository.getLast5ArticleByArticleTypeIdNative(typeId, 3);
     }
 
-    public List<ArticleShortInfoMapper> getLast8(List<String> excludedIds) {
-        return articleRepository.getLast8(excludedIds);
+    public List<ArticleShortInfoMapper> getLast8ExceptSome(List<String> excludedIds) {
+        return articleRepository.getLast8ArticleExceptSome(excludedIds, ArticleStatus.PUBLISHED);
+    }
+
+    public ArticleDTO getById(String articleId, Language language) {
+        ArticleEntity entity = get(articleId);
+        ArticleDTO dto = new ArticleDTO();
+        dto.setId(entity.getId());
+        dto.setTitle(entity.getTitle());
+        dto.setDescription(entity.getDescription());
+        dto.setContent(entity.getContent());
+        dto.setImageId(entity.getImageId());
+        dto.setRegion(regionService.getByIdAndLanguage(entity.getRegionId(), language));
+        return dto;
     }
 
     public List<ArticleShortInfoMapper> getLast4(Integer typeId, String id) {
-        return articleRepository.getLast4(typeId, id);
+        return articleRepository.getLast4ArticleByArticleTypeIdAndExcept(id, typeId, ArticleStatus.PUBLISHED);
     }
 
     public List<ArticleShortInfoMapper> mostRead4() {
-        return articleRepository.mostRead4();
+        return articleRepository.get4MostRead(ArticleStatus.PUBLISHED);
     }
 
-    public List<ArticleShortInfoMapper> getLast4ByTag(String tagName) {
-        return articleRepository.getLast4ByTag(tagName);
+    public List<ArticleShortInfoMapper> getLast4ByTag(String articleId, Integer tagId) {
+        return articleRepository.getLast4ArticleByArticleTagId(articleId, tagId, ArticleStatus.PUBLISHED);
     }
 
-    public List<ArticleShortInfoMapper> getLast5ByTypeAndRegion(String type, Integer regionId) {
-        return articleRepository.getLast5ByTypeAndRegion(regionId, type);
+    public List<ArticleShortInfoMapper> getLast5ByTypeAndRegion(Integer typeId, Integer regionId) {
+        return articleRepository.getLast5ArticleByArticleTypeIdAndRegionId(regionId, typeId, ArticleStatus.PUBLISHED);
     }
 
     public PageImpl<ArticleShortInfoMapper> getListByRegionPagination(Integer regionId, int size, int page) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ArticleShortInfoMapper> pageObj = articleRepository.getListRegionPagination(regionId, pageable);
+        Page<ArticleShortInfoMapper> pageObj = articleRepository.getPaginationByRegionId(regionId, ArticleStatus.PUBLISHED, pageable);
         return new PageImpl<>(pageObj.getContent(), pageable, pageObj.getTotalElements());
     }
 
-    public List<ArticleShortInfoMapper> getLast5ByCategory(Integer id) {
-        return articleRepository.getLast5ByCategory(id);
+    public List<ArticleShortInfoMapper> getLast5ByCategory(Integer categoryId) {
+        return articleRepository.getLast5ByCategoryId(categoryId, ArticleStatus.PUBLISHED);
     }
 
 
     public PageImpl<ArticleShortInfoMapper> getListByCategoryPagination(Integer categoryId, int size, int page) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ArticleShortInfoMapper> pageObj = articleRepository.getListCategoryPagination(categoryId, pageable);
+        Page<ArticleShortInfoMapper> pageObj = articleRepository.getPaginationByCategoryId(categoryId, ArticleStatus.PUBLISHED, pageable);
         return new PageImpl<>(pageObj.getContent(), pageable, pageObj.getTotalElements());
     }
-
-
 
 
     private void check(ArticleDTO articleDTO) {
@@ -123,49 +150,49 @@ public class ArticleService {
         if (articleDTO.getTitle() == null && articleDTO.getTitle().isBlank()) {
             throw new AppBadRequestException("title  qani?");
         }
-        if (articleDTO.getPublisherId() == null ) {
-            throw new AppBadRequestException("publisher  qani?");
-        }
+//        if (articleDTO.getPublisherId() == null ) {
+//            throw new AppBadRequestException("publisher  qani?");
+//        }
         if (articleDTO.getRegionId() == null ) {
             throw new AppBadRequestException("region  qani?");
         }
     }
 
-    public ArticleDTO toDTO(ArticleEntity entity){
-        ArticleDTO dto = new ArticleDTO();
-        dto.setDescription(entity.getDescription());
-        dto.setContent(entity.getContent());
-        dto.setCategoryId(entity.getCategoryId());
-        dto.setModeratorId(entity.getModeratorId());
-        dto.setStatus(entity.getStatus());
-        dto.setCreatedDate(entity.getCreatedDate());
-        dto.setVisible(entity.getVisible());
-        dto.setSharedCount(entity.getSharedCount());
-        dto.setTitle(entity.getTitle());
-        dto.setRegionId(entity.getRegionId());
-        dto.setView_count(entity.getViewCount());
-        dto.setPublishedDate(entity.getPublishedDate());
-        dto.setPublisherId(entity.getPublisherId());
-        return dto;
-    }
-
-    public ArticleEntity toEntity(ArticleDTO dto){
-        ArticleEntity entity = new ArticleEntity();
-        entity.setDescription(dto.getDescription());
-        entity.setContent(dto.getContent());
-        entity.setCategoryId(dto.getCategoryId());
-        entity.setModeratorId(dto.getModeratorId());
-        entity.setStatus(dto.getStatus());
-        entity.setCreatedDate(dto.getCreatedDate());
-        entity.setVisible(dto.getVisible());
-        entity.setSharedCount(dto.getSharedCount());
-        entity.setTitle(dto.getTitle());
-        entity.setRegionId(dto.getRegionId());
-        entity.setViewCount(dto.getView_count());
-        entity.setPublishedDate(dto.getPublishedDate());
-        entity.setPublisherId(dto.getPublisherId());
-        return entity;
-    }
+//    public ArticleDTO toDTO(ArticleEntity entity){
+//        ArticleDTO dto = new ArticleDTO();
+//        dto.setDescription(entity.getDescription());
+//        dto.setContent(entity.getContent());
+//        dto.setCategoryId(entity.getCategoryId());
+//        dto.setModeratorId(entity.getModeratorId());
+//        dto.setStatus(entity.getStatus());
+//        dto.setCreatedDate(entity.getCreatedDate());
+//        dto.setVisible(entity.getVisible());
+//        dto.setSharedCount(entity.getSharedCount());
+//        dto.setTitle(entity.getTitle());
+//        dto.setRegionId(entity.getRegionId());
+//        dto.setView_count(entity.getViewCount());
+//        dto.setPublishedDate(entity.getPublishedDate());
+//        dto.setPublisherId(entity.getPublisherId());
+//        return dto;
+//    }
+//
+//    public ArticleEntity toEntity(ArticleDTO dto){
+//        ArticleEntity entity = new ArticleEntity();
+//        entity.setDescription(dto.getDescription());
+//        entity.setContent(dto.getContent());
+//        entity.setCategoryId(dto.getCategoryId());
+//        entity.setModeratorId(dto.getModeratorId());
+//        entity.setStatus(dto.getStatus());
+//        entity.setCreatedDate(dto.getCreatedDate());
+//        entity.setVisible(dto.getVisible());
+//        entity.setSharedCount(dto.getSharedCount());
+//        entity.setTitle(dto.getTitle());
+//        entity.setRegionId(dto.getRegionId());
+//        entity.setViewCount(dto.getView_count());
+//        entity.setPublishedDate(dto.getPublishedDate());
+//        entity.setPublisherId(dto.getPublisherId());
+//        return entity;
+//    }
 
 
 }

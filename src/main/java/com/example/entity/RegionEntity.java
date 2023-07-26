@@ -4,26 +4,20 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "region")
-public class RegionEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private Integer order_number;
+public class RegionEntity extends BaseEntity {
+    @Column(name = "order_number", nullable = false)
+    private Integer orderNumber;
     @Column(name = "name_uz", nullable = false)
     private String nameUz;
     @Column(name = "name_ru", nullable = false)
     private String nameRu;
     @Column(name = "name_eng", nullable = false)
     private String nameEng;
-    @Column(nullable = false)
-    private Boolean visible=true;
     @Column(name = "prt_id")
     private Integer prtId;
-    private LocalDateTime createdDate= LocalDateTime.now();
 }

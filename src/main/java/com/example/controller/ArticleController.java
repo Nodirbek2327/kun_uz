@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.ArticleDTO;
 import com.example.dto.JwtDTO;
+import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.ArticleService;
 import com.example.util.SecurityUtil;
@@ -25,11 +26,11 @@ public class ArticleController {
     }
 
     @PutMapping(value = "/admin/{id}")
-    public ResponseEntity<Boolean> update(@RequestBody ArticleDTO dto,
+    public ResponseEntity<?> update(@RequestBody ArticleDTO dto,
                                           @PathVariable("id") String id,
                                           HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
-        return ResponseEntity.ok(articleService.update(id, dto));
+        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.MODERATOR);
+        return ResponseEntity.ok(articleService.update(id, dto, jwtDTO.getId()));
     }
 
     @DeleteMapping(value = "/admin/delete")
@@ -56,17 +57,22 @@ public class ArticleController {
 
     @GetMapping(value = "/last5")
     public ResponseEntity<?> getLast5(@RequestParam("id") Integer typeId) {
-        return ResponseEntity.ok(articleService.getLast5(typeId));
+        return ResponseEntity.ok(articleService.getLast5ByTypes(typeId));
     }
 
     @GetMapping(value = "/last3")
     public ResponseEntity<?> getLast3(@RequestParam("id") Integer typeId) {
-        return ResponseEntity.ok(articleService.getLast3(typeId));
+        return ResponseEntity.ok(articleService.getLast3Types(typeId));
     }
 
     @GetMapping(value = "/last8")
     public ResponseEntity<?> getLast8(@RequestBody List<String> ids) {
-        return ResponseEntity.ok(articleService.getLast8(ids));
+        return ResponseEntity.ok(articleService.getLast8ExceptSome(ids));
+    }
+
+    @GetMapping(value = "/id/lang")
+    public ResponseEntity<?> getLast4(@RequestParam("lang") Language language, @RequestParam("articleId") String artcileId) {
+        return ResponseEntity.ok(articleService.getById(artcileId, language));
     }
 
     @GetMapping(value = "/last4")
@@ -79,14 +85,15 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.mostRead4());
     }
 
-    @GetMapping(value = "/last4")
-    public ResponseEntity<?> getLast4ByTag(@RequestParam("tagName") String tagName) {
-        return ResponseEntity.ok(articleService.getLast4ByTag(tagName));
+    @GetMapping(value = "/last4_tag")
+    public ResponseEntity<?> getLast4ByTag(@RequestParam("tagId") Integer tagId,
+                                           @RequestParam("articleId") String artcileId) {
+        return ResponseEntity.ok(articleService.getLast4ByTag(artcileId, tagId));
     }
 
-    @GetMapping(value = "/last5")
-    public ResponseEntity<?> getLast5ByTypeAndRegion(@RequestParam("type") String type, @RequestParam("regionId") Integer regionId ) {
-        return ResponseEntity.ok(articleService.getLast5ByTypeAndRegion(type, regionId));
+    @GetMapping(value = "/last5/region")
+    public ResponseEntity<?> getLast5ByTypeAndRegion(@RequestParam("typeId") Integer typeId, @RequestParam("regionId") Integer regionId ) {
+        return ResponseEntity.ok(articleService.getLast5ByTypeAndRegion(typeId, regionId));
     }
 
     @GetMapping(value = "/paginationByRegion")

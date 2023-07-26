@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 @Getter
 public class TagDTO {
     private Integer id;
-    private Integer order_number;
+    private Integer orderNumber;
     private String nameUz;
     private String nameRu;
     private String nameEng;
     private Boolean visible;
     private LocalDateTime createdDate;
+    private String name;
 }

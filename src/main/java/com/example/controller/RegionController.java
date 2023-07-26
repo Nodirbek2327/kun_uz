@@ -3,6 +3,7 @@ package com.example.controller;
 
 import com.example.dto.JwtDTO;
 import com.example.dto.RegionDTO;
+import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.RegionService;
 import com.example.util.SecurityUtil;
@@ -49,7 +50,7 @@ public class RegionController {
     }
 
     @GetMapping(value = "/language")
-    public ResponseEntity<?> getByLanguage(@RequestParam("lang") String lang) {
+    public ResponseEntity<?> getByLanguage(@RequestParam("lang") Language lang) {
         return ResponseEntity.ok(regionService.getByLanguage(lang));
     }
 

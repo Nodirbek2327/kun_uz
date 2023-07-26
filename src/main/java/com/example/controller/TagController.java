@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.JwtDTO;
 import com.example.dto.TagDTO;
+import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.TagService;
 import com.example.util.SecurityUtil;
@@ -48,7 +49,7 @@ public class TagController {
     }
 
     @GetMapping(value = "/language")
-    public ResponseEntity<?> getByLanguage(@RequestParam("lang") String lang) {
+    public ResponseEntity<?> getByLanguage(@RequestParam("lang") Language lang) {
         return ResponseEntity.ok(tagService.getByLanguage(lang));
     }
 

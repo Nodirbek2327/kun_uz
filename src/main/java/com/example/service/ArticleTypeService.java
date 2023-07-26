@@ -1,12 +1,12 @@
 package com.example.service;
 
 import com.example.dto.ArticleTypeDTO;
-import com.example.dto.CategoryDTO;
+import com.example.dto.TagDTO;
 import com.example.entity.ArticleTypeEntity;
-import com.example.entity.CategoryEntity;
+import com.example.entity.TagEntity;
+import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
-import com.example.mapper.RegionMapper;
 import com.example.repository.ArticleTypeRepository;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +31,7 @@ public class ArticleTypeService {
         entity.setNameRu(dto.getNameRu());
         entity.setNameEng(dto.getNameEng());
         entity.setPrtId(prtId);
-        entity.setOrder_number(dto.getOrder_number());
+        entity.setOrderNumber(dto.getOrderNumber());
         articleTypeRepository.save(entity);
 
         dto.setId(entity.getId());
@@ -58,44 +58,46 @@ public class ArticleTypeService {
     }
 
 
+    public List<ArticleTypeDTO> getByLanguage(Language lang) {
+        Iterable<ArticleTypeEntity> iterable = articleTypeRepository.findAll();
+        List<ArticleTypeDTO> list = new LinkedList<>();
+        switch (lang){
+            case ru:{
+                iterable.forEach(entity -> {
+                    ArticleTypeDTO dto = new ArticleTypeDTO();
+                    dto.setId(entity.getId());
+                    dto.setOrderNumber(entity.getOrderNumber());
+                    dto.setName(entity.getNameRu());
+                    list.add(dto);
+                });
+            }
+            case eng: {
+                iterable.forEach(entity -> {
+                    ArticleTypeDTO dto = new ArticleTypeDTO();
+                    dto.setId(entity.getId());
+                    dto.setOrderNumber(entity.getOrderNumber());
+                    dto.setName(entity.getNameEng());
+                    list.add(dto);
+                });
+            }
+            default:{
+                iterable.forEach(entity -> {
+                    ArticleTypeDTO dto = new ArticleTypeDTO();
+                    dto.setId(entity.getId());
+                    dto.setOrderNumber(entity.getOrderNumber());
+                    dto.setName(entity.getNameUz());
+                    list.add(dto);
+                });
+            }
+        }
+        return list;
+    }
+
     public PageImpl<ArticleTypeDTO> regionPagination(int page, int size) {
         Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<ArticleTypeEntity> pageObj = articleTypeRepository.findAll(pageable);
         return new PageImpl<>(getArticleTypeDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
-    }
-
-    public List<RegionMapper> getByLanguage(String lang) {
-        Iterable<ArticleTypeEntity> iterable = articleTypeRepository.findAll();
-        List<RegionMapper> list = new LinkedList<>();
-        if (lang.startsWith("ru")) {
-            iterable.forEach(regionEntity -> {
-                RegionMapper regionMapper = new RegionMapper();
-                regionMapper.setId(regionEntity.getId());
-                regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getNameRu());
-                list.add(regionMapper);
-            });
-        } else if (lang.startsWith("eng")) {
-            iterable.forEach(regionEntity -> {
-                RegionMapper regionMapper = new RegionMapper();
-                regionMapper.setId(regionEntity.getId());
-                regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getNameEng());
-                list.add(regionMapper);
-            });
-        } else if (lang.startsWith("uz")) {
-            iterable.forEach(regionEntity -> {
-                RegionMapper regionMapper = new RegionMapper();
-                regionMapper.setId(regionEntity.getId());
-                regionMapper.setOrder_number(regionEntity.getOrder_number());
-                regionMapper.setName(regionEntity.getNameUz());
-                list.add(regionMapper);
-            });
-        } else {
-            throw new AppBadRequestException("mazgi bunday language yo'q");
-        }
-        return list;
     }
 
     private void check(ArticleTypeDTO categoryDTO) {
@@ -108,7 +110,7 @@ public class ArticleTypeService {
         if (categoryDTO.getNameEng() == null || categoryDTO.getNameEng().isBlank()) {
             throw new AppBadRequestException("englizcha Name qani?");
         }
-        if (categoryDTO.getOrder_number() == null ) {
+        if (categoryDTO.getOrderNumber() == null ) {
             throw new AppBadRequestException("order_number Name qani?");
         }
     }
@@ -121,19 +123,7 @@ public class ArticleTypeService {
         entity.setNameEng(dto.getNameEng());
         entity.setNameRu(dto.getNameRu());
         entity.setNameUz(dto.getNameUz());
-        entity.setOrder_number(dto.getOrder_number());
-        return entity;
-    }
-
-    public ArticleTypeEntity toEntity(ArticleTypeDTO dto){
-        ArticleTypeEntity entity = new ArticleTypeEntity();
-        entity.setId(dto.getId());
-        entity.setCreatedDate(dto.getCreatedDate());
-        entity.setVisible(dto.getVisible());
-        entity.setNameEng(dto.getNameEng());
-        entity.setNameRu(dto.getNameRu());
-        entity.setNameUz(dto.getNameUz());
-        entity.setOrder_number(dto.getOrder_number());
+        entity.setOrderNumber(dto.getOrderNumber());
         return entity;
     }
 
