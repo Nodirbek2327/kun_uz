@@ -27,6 +27,8 @@ public class ArticleService {
     private ArticleTypesService articleTypesService;
     @Autowired
     private RegionService regionService;
+    @Autowired
+    private ArticleTagsService articleTagsService;
 
     public ArticleDTO create(ArticleDTO dto, Integer moderatorId) {
         check(dto);
@@ -41,6 +43,7 @@ public class ArticleService {
         entity.setStatus(ArticleStatus.NOT_PUBLISHED);
         articleRepository.save(entity); // save
         articleTypesService.create(entity.getId(), dto.getArticleType()); // save type list
+        articleTagsService.create(entity.getId(), dto.getArticleTag()); // save tag list
         // response
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());
@@ -60,6 +63,7 @@ public class ArticleService {
         articleRepository.save(entity); // save
 
         articleTypesService.merge(entity.getId(), dto.getArticleType()); // save type list
+        articleTagsService.merge(entity.getId(), dto.getArticleTag()); // save tag list
         // response
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());

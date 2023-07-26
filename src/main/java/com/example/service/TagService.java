@@ -2,6 +2,8 @@ package com.example.service;
 
 import com.example.dto.RegionDTO;
 import com.example.dto.TagDTO;
+import com.example.entity.ArticleTagsEntity;
+import com.example.entity.ArticleTypesEntity;
 import com.example.entity.RegionEntity;
 import com.example.entity.TagEntity;
 import com.example.enums.Language;

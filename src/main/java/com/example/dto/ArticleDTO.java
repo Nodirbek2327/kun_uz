@@ -16,6 +16,7 @@ public class ArticleDTO {
     private String imageId;
     private Integer categoryId;
     private List<Integer> articleType;
+    private List<Integer> articleTag;
     private Integer regionId;
     private RegionDTO region;
     private LocalDateTime createdDate;
