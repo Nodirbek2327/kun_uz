@@ -1,7 +1,7 @@
 package com.example.repository;
 
-import com.example.dto.FilterDTO;
-import com.example.dto.ProfileFilterDTO;
+import com.example.dto.*;
+import com.example.entity.CommentEntity;
 import com.example.entity.ProfileEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -73,6 +73,70 @@ public class CustomRepository {
 
         return  new FilterDTO<>(entityList, totalCount);
     }
+
+
+
+    public FilterResultDTO<CommentEntity> filterComment(CommentFilterDTO filterDTO, int page, int size) {
+
+        StringBuilder stringBuilder = new StringBuilder("");
+        Map<String, Object> params = new HashMap<>();
+        if (filterDTO.getArticleId() != null) {
+            stringBuilder.append(" and c.articleId =:articleId");
+            params.put("articleId", filterDTO.getArticleId());
+        }
+        if (filterDTO.getId() != null) {
+            stringBuilder.append(" and c.id =:id");
+            params.put("id", filterDTO.getId());
+        }
+        if (filterDTO.getProfileId() != null) {
+            stringBuilder.append(" and c.profileId =:profileId");
+            params.put("profileId", filterDTO.getProfileId());
+        }
+        if (filterDTO.getCreated_date_from() != null && filterDTO.getCreated_date_to() != null) {
+            stringBuilder.append(" and c.createdDate between :dateFrom and :dateTo ");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_from(), LocalTime.MIN));
+            params.put("dateTo", LocalDateTime.of(filterDTO.getCreated_date_to(), LocalTime.MAX));
+        } else if (filterDTO.getCreated_date_from() != null) {
+            stringBuilder.append(" and c.createdDate >= :dateFrom");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_from(), LocalTime.MIN));
+        } else if (filterDTO.getCreated_date_to() != null) {
+            stringBuilder.append(" and c.createdDate <= :dateTo");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_to(), LocalTime.MAX));
+        }
+
+        StringBuilder selectBuilder = new StringBuilder("select c from CommentEntity as c where c.visible = true ");
+        selectBuilder.append(stringBuilder);
+        selectBuilder.append(" order by c.createdDate desc");
+
+        StringBuilder countBuilder = new StringBuilder("select count(c) from CommentEntity as c where c.visible=true");
+        countBuilder.append(stringBuilder);
+
+        Query selectQuery = entityManager.createQuery(selectBuilder.toString());
+        selectQuery.setMaxResults(size); // limit
+        selectQuery.setFirstResult(size * page); // offset
+
+        Query countQuery = entityManager.createQuery(countBuilder.toString());
+        // params
+        for (Map.Entry<String, Object> param : params.entrySet()) {
+            selectQuery.setParameter(param.getKey(), param.getValue());
+            countQuery.setParameter(param.getKey(), param.getValue());
+        }
+
+        List<CommentEntity> entityList = selectQuery.getResultList();
+        Long totalCount = (Long) countQuery.getSingleResult();
+
+        return  new FilterResultDTO<>(entityList, totalCount);
+    }
+
+
+
+
+
+
+
+
+
+
 
 //
 //    public List<StudentMarkEntity> filterStudentMark(StudentMarkFilterDTO filterDTO, int page, int size) {
@@ -150,4 +214,7 @@ public class CustomRepository {
 //
 //        return entityList;
 //    }
+
+
+
 }
