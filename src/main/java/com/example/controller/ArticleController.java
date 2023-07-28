@@ -116,6 +116,29 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getListByCategoryPagination(categoryId, to, from-1));
     }
 
+    @PutMapping(value = "/admin/viewCount")
+    public ResponseEntity<String> viewCount(@RequestParam("id") String id,
+                                         HttpServletRequest request) {
+        SecurityUtil.hasRole(request, null);
+        Boolean response = articleService.increaseViewCount(id);
+        if (response) {
+            return ResponseEntity.ok("increased");
+        }
+        return ResponseEntity.badRequest().body("article Not Found");
+    }
+
+    @PutMapping(value = "/admin/sharedCount")
+    public ResponseEntity<String> sharedCount(@RequestParam("id") String id,
+                                            HttpServletRequest request) {
+        SecurityUtil.hasRole(request, null);
+        Boolean response = articleService.increaseSharedCount(id);
+        if (response) {
+            return ResponseEntity.ok("increased");
+        }
+        return ResponseEntity.badRequest().body("article Not Found");
+    }
+
+
 
 //    @GetMapping(value = "admin/pagination")
 //    public ResponseEntity<?> pagination(@RequestParam("from") int from,

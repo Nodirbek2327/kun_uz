@@ -24,6 +24,7 @@ public class SecuredFilterConfig {
         bean.addUrlPatterns("/api/v1/tag/admin/*");
         bean.addUrlPatterns("/api/v1/attach/admin/*");
         bean.addUrlPatterns("/api/v1/comment/admin/*");
+        bean.addUrlPatterns("/api/v1/comment_like/admin/*");
         return bean;
     }
 }

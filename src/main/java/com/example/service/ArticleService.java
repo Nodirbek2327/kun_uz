@@ -140,6 +140,14 @@ public class ArticleService {
         return new PageImpl<>(pageObj.getContent(), pageable, pageObj.getTotalElements());
     }
 
+    public Boolean increaseViewCount(String id) {
+        return articleRepository.increaseViewCount(id)==1;
+    }
+
+    public Boolean increaseSharedCount(String id) {
+        return articleRepository.increaseSharedCount(id)==1;
+    }
+
 
     private void check(ArticleDTO articleDTO) {
         if (articleDTO.getCategoryId() == null) {

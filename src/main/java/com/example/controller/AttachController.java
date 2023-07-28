@@ -6,6 +6,7 @@ import com.example.service.AttachService;
 import com.example.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,5 +61,9 @@ public class AttachController {
         return ResponseEntity.ok(attachService.attachPagination(from-1, to));
     }
 
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> download(@PathVariable("id") String id) {
+        return attachService.download(id);
+    }
 
 }

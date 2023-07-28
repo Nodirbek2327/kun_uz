@@ -6,7 +6,12 @@ import com.example.exp.AppBadRequestException;
 import com.example.exp.ItemNotFoundException;
 import com.example.repository.AttachRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,9 +29,14 @@ import java.util.*;
 
 @Service
 public class AttachService {
+
+    @Value("${attach.folder.name}")
+    private String folderName;
+
+    @Value("${attach.url}")
+    private String attachUrl;
     @Autowired
     private AttachRepository attachRepository;
-    private final String folderName = "attaches";
 
     public String saveToSystem(MultipartFile file) {
 //        System.out.println(file.getSize());
@@ -47,20 +58,14 @@ public class AttachService {
         }
     }
 
-    public byte[] loadImage(String fileName) {
-        try {
-            BufferedImage originalImage = ImageIO.read(new File("attaches/" + fileName));
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(originalImage, "png", baos);
-
-            baos.flush();
-            byte[] imageInByte = baos.toByteArray();
-            baos.close();
-            return imageInByte;
-        } catch (Exception e) {
-            return new byte[0];
+    public AttachDTO getAttachWithUrl(String id) {
+        if (id == null) {
+            return null;
         }
+        AttachDTO dto = new AttachDTO();
+        dto.setId(id);
+        dto.setUrl(getUrl(id));
+        return dto;
     }
 
     public AttachDTO save(MultipartFile file) {
@@ -88,8 +93,7 @@ public class AttachService {
             AttachDTO attachDTO = new AttachDTO();
             attachDTO.setId(key);
             attachDTO.setOriginalName(entity.getOriginalName());
-            // any think you want mazgi.
-            attachDTO.setUrl("");
+            attachDTO.setUrl(getUrl(entity.getId()));
 
             return attachDTO;
         } catch (IOException e) {
@@ -98,8 +102,21 @@ public class AttachService {
         }
     }
 
+    public byte[] loadImage(String fileName) {
+        try {
+            BufferedImage originalImage = ImageIO.read(new File("attaches/" + fileName));
 
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(originalImage, "png", baos);
 
+            baos.flush();
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+            return imageInByte;
+        } catch (Exception e) {
+            return new byte[0];
+        }
+    }
 
     public byte[] loadImageById(String id) {
         AttachEntity entity = get(id);
@@ -113,10 +130,10 @@ public class AttachService {
             baos.close();
             return imageInByte;
         } catch (Exception e) {
+            e.printStackTrace();
             return new byte[0];
         }
     }
-
 
     public byte[] loadByIdGeneral(String id) {
         AttachEntity entity = get(id);
@@ -136,8 +153,32 @@ public class AttachService {
         }
     }
 
+    public ResponseEntity<Resource> download(String id) {
+        AttachEntity entity = get(id);
+        try {
+            String url = folderName + "/" + entity.getPath() + "/" + id + "." + entity.getExtension();
+
+            Path file = Paths.get(url);
+            Resource resource = new UrlResource(file.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + entity.getOriginalName() + "\"").body(resource);
+            } else {
+                throw new RuntimeException("Could not read the file!");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
+    }
+
+    public String getUrl(String id) {
+        return attachUrl + "/open/" + id + "/img";
+    }
+
+
     private AttachEntity get(String id) {
-        return attachRepository.findById(id).orElseThrow(() -> new AppBadRequestException("Profile not found"));
+        return attachRepository.findById(id).orElseThrow(() -> new AppBadRequestException("image not found"));
     }
 
     public PageImpl<AttachDTO> attachPagination(int page, int size) {
@@ -162,11 +203,6 @@ public class AttachService {
         }
       return true;
     }
-
-
-
-
-
 
     private List<AttachDTO> getAttachDTOS(List<AttachEntity> list) {
         if (list.isEmpty()) {

@@ -110,6 +110,18 @@ public interface ArticleRepository extends CrudRepository<ArticleEntity, String>
                                                              Pageable pageable);
 
 
+    @Transactional
+    @Modifying
+    @Query("update ArticleEntity set viewCount = viewCount+1 where id =:id")
+    int increaseViewCount(@Param("id") String id);
+
+    @Transactional
+    @Modifying
+    @Query("update ArticleEntity set sharedCount = sharedCount+1 where id =:id")
+    int increaseSharedCount(@Param("id") String id);
+
+
+
 //    @Transactional
 //    @Modifying
 //    @Query("select new com.example.mapper.ArticleShortInfoMapper(a.id, a.title, a.publishedDate) from ArticleEntity as a join a.articleTypes as t where t.id = :id and a.status = 'Published' and a.visible=true  order by a.createdDate limit 5")
