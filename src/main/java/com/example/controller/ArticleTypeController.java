@@ -1,13 +1,8 @@
 package com.example.controller;
 
 import com.example.dto.ArticleTypeDTO;
-import com.example.dto.CategoryDTO;
-import com.example.dto.JwtDTO;
 import com.example.enums.Language;
-import com.example.enums.ProfileRole;
 import com.example.service.ArticleTypeService;
-import com.example.util.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +14,19 @@ public class ArticleTypeController {
     @Autowired
     private ArticleTypeService articleTypeService;
 
-    @PostMapping(value = {"/admin"})
-    public ResponseEntity<?> create(@RequestBody ArticleTypeDTO dto, HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(articleTypeService.createWithJwt(dto, jwtDTO.getId()));
+    @PostMapping(value = {"/admin/create"})
+    public ResponseEntity<?> create(@RequestBody ArticleTypeDTO dto) {
+        return ResponseEntity.ok(articleTypeService.createWithJwt(dto,null));
     }
 
     @PutMapping(value = "/admin/update")
     public ResponseEntity<Boolean> update(@RequestBody ArticleTypeDTO dto,
-                                          @PathVariable("id") Integer id,
-                                          HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+                                          @PathVariable("id") Integer id) {
         return ResponseEntity.ok(articleTypeService.updateWithJwt(id, dto));
     }
 
-    @DeleteMapping(value = "admin/delete")
-    public ResponseEntity<String> delete(@RequestParam("id") Integer id,  HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+    @DeleteMapping(value = "/admin/delete")
+    public ResponseEntity<String> delete(@RequestParam("id") Integer id) {
         Boolean response = articleTypeService.delete(id);
         if (response) {
             return ResponseEntity.ok("articleType deleted");
@@ -43,11 +34,9 @@ public class ArticleTypeController {
         return ResponseEntity.badRequest().body("articleType Not Found");
     }
 
-    @GetMapping(value = "admin/pagination")
+    @GetMapping(value = "/admin/pagination")
     public ResponseEntity<?> pagination(@RequestParam("from") int from,
-                                        @RequestParam("to") int to,
-                                        HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+                                        @RequestParam("to") int to) {
         return ResponseEntity.ok(articleTypeService.regionPagination(from-1, to));
     }
 

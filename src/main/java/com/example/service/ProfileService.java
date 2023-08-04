@@ -78,9 +78,9 @@ public class ProfileService {
 
 
     public ProfileDTO add(ProfileDTO dto) {
-        dto.setCreatedDate(LocalDateTime.now());
+//        dto.setCreatedDate(LocalDateTime.now());
+//        dto.setVisible(true);
         dto.setStatus(ProfileStatus.ACTIVE);
-        dto.setVisible(true);
         check(dto);
         ProfileEntity entity = toEntity(dto);
         profileRepository.save(entity);

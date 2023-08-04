@@ -1,6 +1,7 @@
 package com.example.repository;
 
 import com.example.dto.*;
+import com.example.entity.ArticleEntity;
 import com.example.entity.CommentEntity;
 import com.example.entity.ProfileEntity;
 import jakarta.persistence.EntityManager;
@@ -127,6 +128,87 @@ public class CustomRepository {
 
         return  new FilterResultDTO<>(entityList, totalCount);
     }
+
+
+    public FilterResultDTO<ArticleEntity> filterArticle(ArticleFilterDTO filterDTO, int page, int size) {
+
+        StringBuilder stringBuilder = new StringBuilder("");
+        Map<String, Object> params = new HashMap<>();
+        if (filterDTO.getId() != null) {
+            stringBuilder.append(" and c.id =:id");
+            params.put("id", filterDTO.getId());
+        }
+        if (filterDTO.getCategory_id() != null) {
+            stringBuilder.append(" and c.categoryId =:categoryId");
+            params.put("categoryId", filterDTO.getCategory_id());
+        }
+        if (filterDTO.getModerator_id() != null) {
+            stringBuilder.append(" and c.moderatorId =:profileId");
+            params.put("profileId", filterDTO.getModerator_id());
+        }
+        if (filterDTO.getStatus() != null) {
+            stringBuilder.append(" and c.status =:status");
+            params.put("status", filterDTO.getStatus());
+        }
+        if (filterDTO.getTitle() != null) {
+            stringBuilder.append(" and c.title =:title");
+            params.put("title", filterDTO.getTitle());
+        }
+        if (filterDTO.getPublisher_id() != null) {
+            stringBuilder.append(" and c.publisherId =:publisherId");
+            params.put("publisherId", filterDTO.getPublisher_id());
+        }
+        if (filterDTO.getRegion_id() != null) {
+            stringBuilder.append(" and c.regionId =:regionId");
+            params.put("regionId", filterDTO.getRegion_id());
+        }
+        if (filterDTO.getCreated_date_from() != null && filterDTO.getCreated_date_to() != null) {
+            stringBuilder.append(" and c.createdDate between :dateFrom and :dateTo ");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_from(), LocalTime.MIN));
+            params.put("dateTo", LocalDateTime.of(filterDTO.getCreated_date_to(), LocalTime.MAX));
+        } else if (filterDTO.getCreated_date_from() != null) {
+            stringBuilder.append(" and c.createdDate >= :dateFrom");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_from(), LocalTime.MIN));
+        } else if (filterDTO.getCreated_date_to() != null) {
+            stringBuilder.append(" and c.createdDate <= :dateTo");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_to(), LocalTime.MAX));
+        }
+        if (filterDTO.getPublished_date_from() != null && filterDTO.getPublished_date_to() != null) {
+            stringBuilder.append(" and c.publishedDate between :dateFrom and :dateTo ");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_from(), LocalTime.MIN));
+            params.put("dateTo", LocalDateTime.of(filterDTO.getCreated_date_to(), LocalTime.MAX));
+        } else if (filterDTO.getPublished_date_from() != null) {
+            stringBuilder.append(" and c.publishedDate >= :dateFrom");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_from(), LocalTime.MIN));
+        } else if (filterDTO.getPublished_date_to() != null) {
+            stringBuilder.append(" and c.publishedDate <= :dateTo");
+            params.put("dateFrom", LocalDateTime.of(filterDTO.getCreated_date_to(), LocalTime.MAX));
+        }
+
+        StringBuilder selectBuilder = new StringBuilder("select c from ArticleEntity as c where c.visible = true ");
+        selectBuilder.append(stringBuilder);
+        selectBuilder.append(" order by c.createdDate desc");
+
+        StringBuilder countBuilder = new StringBuilder("select count(c) from ArticleEntity as c where c.visible=true");
+        countBuilder.append(stringBuilder);
+
+        Query selectQuery = entityManager.createQuery(selectBuilder.toString());
+        selectQuery.setMaxResults(size); // limit
+        selectQuery.setFirstResult(size * page); // offset
+
+        Query countQuery = entityManager.createQuery(countBuilder.toString());
+        // params
+        for (Map.Entry<String, Object> param : params.entrySet()) {
+            selectQuery.setParameter(param.getKey(), param.getValue());
+            countQuery.setParameter(param.getKey(), param.getValue());
+        }
+
+        List<ArticleEntity> entityList = selectQuery.getResultList();
+        Long totalCount = (Long) countQuery.getSingleResult();
+
+        return  new FilterResultDTO<>(entityList, totalCount);
+    }
+
 
 
 

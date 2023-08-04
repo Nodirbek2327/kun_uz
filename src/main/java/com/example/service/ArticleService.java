@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.dto.*;
 import com.example.entity.ArticleEntity;
+import com.example.entity.CommentEntity;
 import com.example.entity.RegionEntity;
 import com.example.enums.ArticleStatus;
 import com.example.enums.Language;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ArticleService {
@@ -29,6 +31,8 @@ public class ArticleService {
     private RegionService regionService;
     @Autowired
     private ArticleTagsService articleTagsService;
+    @Autowired
+    private CustomRepository customRepository;
 
     public ArticleDTO create(ArticleDTO dto, Integer moderatorId) {
         check(dto);
@@ -148,6 +152,12 @@ public class ArticleService {
         return articleRepository.increaseSharedCount(id)==1;
     }
 
+    public PageImpl<ArticleDTO> filter(ArticleFilterDTO filterDTO, int page, int size) {
+        FilterResultDTO<ArticleEntity> result = customRepository.filterArticle(filterDTO, page, size);
+        List<ArticleDTO> commentDTOList = result.getContent().stream()
+                .map(this::toDTO).collect(Collectors.toList());
+        return new PageImpl<>(commentDTOList, PageRequest.of(page, size), result.getTotalCount());
+    }
 
     private void check(ArticleDTO articleDTO) {
         if (articleDTO.getCategoryId() == null) {
@@ -170,23 +180,16 @@ public class ArticleService {
         }
     }
 
-//    public ArticleDTO toDTO(ArticleEntity entity){
-//        ArticleDTO dto = new ArticleDTO();
-//        dto.setDescription(entity.getDescription());
-//        dto.setContent(entity.getContent());
-//        dto.setCategoryId(entity.getCategoryId());
-//        dto.setModeratorId(entity.getModeratorId());
-//        dto.setStatus(entity.getStatus());
-//        dto.setCreatedDate(entity.getCreatedDate());
-//        dto.setVisible(entity.getVisible());
-//        dto.setSharedCount(entity.getSharedCount());
-//        dto.setTitle(entity.getTitle());
-//        dto.setRegionId(entity.getRegionId());
-//        dto.setView_count(entity.getViewCount());
-//        dto.setPublishedDate(entity.getPublishedDate());
-//        dto.setPublisherId(entity.getPublisherId());
-//        return dto;
-//    }
+    public ArticleDTO toDTO(ArticleEntity entity){
+        ArticleDTO dto = new ArticleDTO();
+        dto.setDescription(entity.getDescription());
+        dto.setContent(entity.getContent());
+        dto.setCategoryId(entity.getCategoryId());
+        dto.setCreatedDate(entity.getCreatedDate());
+        dto.setTitle(entity.getTitle());
+        dto.setRegionId(entity.getRegionId());
+        return dto;
+    }
 //
 //    public ArticleEntity toEntity(ArticleDTO dto){
 //        ArticleEntity entity = new ArticleEntity();

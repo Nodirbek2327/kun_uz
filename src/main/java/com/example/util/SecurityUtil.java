@@ -5,7 +5,7 @@ import com.example.enums.ProfileRole;
 import com.example.exp.AppMethodNotAllowedException;
 import com.example.exp.UnAuthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
-
+/*
 public class SecurityUtil {
     public static JwtDTO getJwtDTO(String authToken) {
         if (authToken.startsWith("Bearer ")) {
@@ -50,3 +50,5 @@ public class SecurityUtil {
         return new JwtDTO(id, role);
     }
 }
+
+ */

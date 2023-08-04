@@ -1,10 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.CommentLikeDTO;
-import com.example.dto.JwtDTO;
 import com.example.service.CommentLikeService;
-import com.example.util.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,21 +13,18 @@ public class CommentLikeController {
     @Autowired
     private CommentLikeService commentLikeService;
 
-    @PostMapping(value = {"/admin/like"})
-    public ResponseEntity<?> createLike(@RequestBody CommentLikeDTO dto, HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
-        return ResponseEntity.ok(commentLikeService.createLike(dto, jwtDTO.getId()));
+    @PostMapping(value = {"/open/like"})
+    public ResponseEntity<?> createLike(@RequestBody CommentLikeDTO dto) {
+        return ResponseEntity.ok(commentLikeService.createLike(dto, 1));
     }
 
-    @PostMapping(value = {"/admin/dislike"})
-    public ResponseEntity<?> createDislike(@RequestBody CommentLikeDTO dto, HttpServletRequest request) {
-        JwtDTO jwtDTO = SecurityUtil.hasRole(request, null);
-        return ResponseEntity.ok(commentLikeService.createDislike(dto, jwtDTO.getId()));
+    @PostMapping(value = {"/open/dislike"})
+    public ResponseEntity<?> createDislike(@RequestBody CommentLikeDTO dto) {
+        return ResponseEntity.ok(commentLikeService.createDislike(dto, 1));
     }
 
-    @DeleteMapping(value = "admin/remove")
-    public ResponseEntity<String> delete(@RequestParam("id") String id,  HttpServletRequest request) {
-        SecurityUtil.hasRole(request, null);
+    @DeleteMapping(value = "/admin/remove")
+    public ResponseEntity<String> delete(@RequestParam("id") String id) {
         Boolean response = commentLikeService.delete(id);
         if (response) {
             return ResponseEntity.ok("like deleted");

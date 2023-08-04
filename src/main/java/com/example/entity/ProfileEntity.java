@@ -17,8 +17,6 @@ import java.util.UUID;
 @Table(name = "profile")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfileEntity extends BaseEntity{
-    private Integer id;
-
     private String name;
 
     private String surname;
@@ -41,7 +39,7 @@ public class ProfileEntity extends BaseEntity{
     @Column(name = "prt_id")
     private Integer prtId;
 
-    @Column(name = "image_id", nullable = false)
+    @Column(name = "image_id")
     private String imageId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id", insertable = false, updatable = false)

@@ -20,9 +20,8 @@ Content-Type:  application/json
   "name": "Ali",
   "surname": "Aliyev",
   "email": "123@mail.ru",
-  "password": "12345",
-  "role": "ADMIN",
-  "phone": "1234567"
+  "password": "12345678",
+  "role": "ADMIN"
 }
 
 ### Update pofile by id

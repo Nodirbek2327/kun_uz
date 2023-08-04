@@ -17,7 +17,7 @@ public interface ArticleTagsRepository  extends CrudRepository<ArticleTagsEntity
     @Modifying
     @Query("delete from ArticleTagsEntity  as a where a.articleId =:articleId  and a.articleTagId=:articleTagId")
     int deleteByArticleIdAndTagId(@Param("articleId") String articleId,
-                                   @Param("articleTypeId") Integer articleTagId);
+                                   @Param("articleTagId") Integer articleTagId);
 
     @Transactional
     @Modifying

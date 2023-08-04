@@ -1,10 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.AttachDTO;
-import com.example.enums.ProfileRole;
 import com.example.service.AttachService;
-import com.example.util.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -29,7 +26,7 @@ public class AttachController {
 //        return attachService.loadImage(fileName);
 //    }
 
-    @PostMapping("/upload2")
+    @PostMapping("/open/upload2")
     public ResponseEntity<AttachDTO> upload2(@RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok().body(attachService.save(file));
     }
@@ -45,23 +42,19 @@ public class AttachController {
     }
 
 
-    @GetMapping(value = "admin/delete")
-    public ResponseEntity<?> delete(@RequestParam("id") String id,
-                                        HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+    @GetMapping(value = "/admin/delete")
+    public ResponseEntity<?> delete(@RequestParam("id") String id) {
         return ResponseEntity.ok(attachService.delete(id));
     }
 
 
-    @GetMapping(value = "admin/pagination")
+    @GetMapping(value = "/admin/pagination")
     public ResponseEntity<?> pagination(@RequestParam("from") int from,
-                                        @RequestParam("to") int to,
-                                        HttpServletRequest request) {
-        SecurityUtil.hasRole(request, ProfileRole.ADMIN);
+                                        @RequestParam("to") int to) {
         return ResponseEntity.ok(attachService.attachPagination(from-1, to));
     }
 
-    @GetMapping("/download/{id}")
+    @GetMapping("/open/download/{id}")
     public ResponseEntity<Resource> download(@PathVariable("id") String id) {
         return attachService.download(id);
     }
