@@ -1,13 +1,16 @@
 package com.example.controller;
 
+import com.example.config.CustomUserDetails;
 import com.example.dto.*;
 import com.example.enums.Language;
 import com.example.enums.ProfileRole;
 import com.example.service.ArticleService;
+import com.example.util.SpringSecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,17 +21,22 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
+    @PreAuthorize("hasRole('MODERATOR')")
     @PostMapping(value = {"/moderator/create"})
     public ResponseEntity<?> create(@RequestBody ArticleDTO dto) {
-        return ResponseEntity.ok(articleService.create(dto, null));
+        CustomUserDetails userDetails = SpringSecurityUtil.getCurrentUser();
+        return ResponseEntity.ok(articleService.create(dto, userDetails.getProfile().getId()));
     }
 
+    @PreAuthorize("hasRole('MODERATOR')")
     @PutMapping(value = "/moderator/{id}")
     public ResponseEntity<?> update(@RequestBody ArticleDTO dto,
                                           @PathVariable("id") String id) {
-        return ResponseEntity.ok(articleService.update(id, dto, null));
+        CustomUserDetails userDetails = SpringSecurityUtil.getCurrentUser();
+        return ResponseEntity.ok(articleService.update(id, dto, userDetails.getProfile().getId()));
     }
 
+    @PreAuthorize("hasRole('MODERATOR')")
     @DeleteMapping(value = "/moderator/delete")
     public ResponseEntity<String> delete(@RequestParam("id") String id) {
         Boolean response = articleService.delete(id);
@@ -38,6 +46,7 @@ public class ArticleController {
         return ResponseEntity.badRequest().body("article Not Found");
     }
 
+    @PreAuthorize("hasRole('PUBLISHER')")
     @PutMapping(value = "/publisher/changeStatus")
     public ResponseEntity<String> changeStatus(@RequestParam("id") String id) {
         Boolean response = articleService.changeStatus(id);

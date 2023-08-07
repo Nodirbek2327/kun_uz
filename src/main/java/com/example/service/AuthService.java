@@ -59,7 +59,7 @@ public class AuthService {
         entity.setSurname(dto.getSurname());
         entity.setEmail(dto.getEmail());
         entity.setPassword(MD5Util.encode(dto.getPassword()));
-        entity.setRole(ProfileRole.USER);
+        entity.setRole(ProfileRole.ROLE_USER);
         entity.setStatus(ProfileStatus.REGISTRATION);
         profileRepository.save(entity);
         mailSenderService.sendEmailVerification(dto.getEmail(), entity.getName(), entity.getId());// send registration verification link

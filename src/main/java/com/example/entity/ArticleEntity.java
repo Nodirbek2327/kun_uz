@@ -49,7 +49,7 @@ public class ArticleEntity extends BaseStringEntity {
     @JoinColumn(name = "moderator_id", insertable = false, updatable = false)
     private ProfileEntity moderator;
 
-    @Column(name = "publisher_id", nullable = false)
+    @Column(name = "publisher_id")
     private Integer publisherId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id", insertable = false, updatable = false)

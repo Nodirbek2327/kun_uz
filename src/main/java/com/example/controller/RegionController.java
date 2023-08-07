@@ -1,11 +1,14 @@
 package com.example.controller;
 
 
+import com.example.config.CustomUserDetails;
 import com.example.dto.RegionDTO;
 import com.example.enums.Language;
 import com.example.service.RegionService;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -14,12 +17,15 @@ import org.springframework.web.bind.annotation.*;
 public class RegionController {
     @Autowired
     private RegionService regionService;
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = {"/admin"})
     public ResponseEntity<?> create(@RequestBody RegionDTO dto/*, HttpServletRequest request*/) {
        // JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(regionService.createWithJwt(dto, 1));
+        CustomUserDetails userDetails = SpringSecurityUtil.getCurrentUser();
+        return ResponseEntity.ok(regionService.createWithJwt(dto, userDetails.getProfile().getId()));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/admin/update")
     public ResponseEntity<Boolean> update(@RequestBody RegionDTO dto,
                                           @PathVariable("id") Integer id /*,
@@ -28,6 +34,7 @@ public class RegionController {
         return ResponseEntity.ok(regionService.updateWithJwt(id, dto));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "admin/delete")
     public ResponseEntity<String> delete(@RequestParam("id") Integer id /*,  HttpServletRequest request*/) {
      //   SecurityUtil.hasRole(request, ProfileRole.ADMIN);
@@ -38,6 +45,7 @@ public class RegionController {
         return ResponseEntity.badRequest().body("region Not Found");
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "admin/pagination")
     public ResponseEntity<?> pagination(@RequestParam("from") int from,
                                         @RequestParam("to") int to

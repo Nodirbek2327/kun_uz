@@ -45,9 +45,9 @@ public class ArticleService {
         entity.setCategoryId(dto.getCategoryId());
         entity.setModeratorId(moderatorId);
         entity.setStatus(ArticleStatus.NOT_PUBLISHED);
-        articleRepository.save(entity); // save
         articleTypesService.create(entity.getId(), dto.getArticleType()); // save type list
         articleTagsService.create(entity.getId(), dto.getArticleTag()); // save tag list
+        articleRepository.save(entity); // save
         // response
         dto.setId(entity.getId());
         dto.setCreatedDate(entity.getCreatedDate());

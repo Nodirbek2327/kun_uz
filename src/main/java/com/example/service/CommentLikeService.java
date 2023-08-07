@@ -2,7 +2,7 @@ package com.example.service;
 
 import com.example.dto.CommentLikeDTO;
 import com.example.entity.CommentLikeEntity;
-import com.example.enums.CommentLikeStatus;
+import com.example.enums.LikeStatus;
 import com.example.exp.AppBadRequestException;
 import com.example.repository.CommentLikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class CommentLikeService {
         CommentLikeEntity entity = new CommentLikeEntity();
         entity.setCommentId(dto.getCommentId());
         entity.setArticleId(dto.getArticleId());
-        entity.setStatus(CommentLikeStatus.LIKE);
+        entity.setStatus(LikeStatus.LIKE);
         entity.setProfileId(prtId);
         commentLikeRepository.save(entity);
 
@@ -40,7 +40,7 @@ public class CommentLikeService {
         CommentLikeEntity entity = new CommentLikeEntity();
         entity.setCommentId(dto.getCommentId());
         entity.setArticleId(dto.getArticleId());
-        entity.setStatus(CommentLikeStatus.DISLIKE);
+        entity.setStatus(LikeStatus.DISLIKE);
         entity.setProfileId(prtId);
         commentLikeRepository.save(entity);
 

@@ -4,6 +4,7 @@ import com.example.service.EmailHistoryService;
 import com.example.service.MailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ public class EmailHistoryController {
     private EmailHistoryService emailHistoryService;
     @Autowired
     private MailSenderService mailSenderService;
+
     @GetMapping(value = "/open/{email}")
     public ResponseEntity<?> getByEmail(@PathVariable("email") String email) {
         return ResponseEntity.ok(emailHistoryService.getEmailHistory(email));
@@ -30,6 +32,7 @@ public class EmailHistoryController {
         return ResponseEntity.ok(emailHistoryService.getEmailByDates(localDateTime1, localDateTime2));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/admin/pagination")
     public ResponseEntity<?> pagination(@RequestParam("from") int from,
                                         @RequestParam("to") int to) {

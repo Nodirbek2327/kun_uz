@@ -3,8 +3,8 @@ POST localhost:8080/api/v1/auth/login
 Content-Type:  application/json
 
 {
-  "phone": "1234564",
-  "password": "12345"
+  "phone": "+998915254475",
+  "password": "1234"
 }
 
 

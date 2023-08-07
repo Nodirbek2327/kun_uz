@@ -1,27 +1,28 @@
 ### Create pofile
 POST localhost:8080/api/v1/profile/admin
 Content-Type:  application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk4NDk3ODMsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2ODk4NTMzODMsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.IZwtM5GC2qCUl8qsKX6cc_MCvFIMBfM3EPukE9rPv-9ar5rbS2WNI1I8KH1qkriit0QaGNl5zQrYLa645Xbayw
+Authorization: Basic Kzk5ODkxNTI1NDQ3NToxMjM0
 
 {
-  "name": "Vali",
-  "surname": "Valiyev",
-  "email": "12345@mail.uz",
-  "password": "1234",
-  "role": "MODERATOR",
-  "phone": "12345678"
+  "name": "G'ani",
+  "surname": "Ganiyev",
+  "email": "1234567@mail.uz",
+  "password": "1234567",
+  "role": "ROLE_USER",
+  "phone": "1234567890"
 }
 
 ### create admin
-POST localhost:8080/api/v1/profile/create
+POST localhost:8080/api/v1/profile/open/create
 Content-Type:  application/json
 
 {
-  "name": "Ali",
-  "surname": "Aliyev",
+  "name": "Nodirbek",
+  "surname": "Hasanov",
   "email": "123@mail.ru",
-  "password": "12345678",
-  "role": "ADMIN"
+  "phone": "+998915254475",
+  "password": "1234",
+  "role": "ROLE_ADMIN"
 }
 
 ### Update pofile by id

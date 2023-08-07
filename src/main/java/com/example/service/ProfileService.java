@@ -78,8 +78,6 @@ public class ProfileService {
 
 
     public ProfileDTO add(ProfileDTO dto) {
-//        dto.setCreatedDate(LocalDateTime.now());
-//        dto.setVisible(true);
         dto.setStatus(ProfileStatus.ACTIVE);
         check(dto);
         ProfileEntity entity = toEntity(dto);
@@ -121,9 +119,6 @@ public class ProfileService {
         if (profileDTO.getPassword() == null || profileDTO.getPassword().isBlank()) {
             throw new AppBadRequestException("password qani?");
         }
-        if ((profileDTO.getPhone() == null && profileDTO.getPhone().isBlank()) || (profileDTO.getEmail()==null && profileDTO.getEmail().isBlank())) {
-            throw new AppBadRequestException("email yoki phone  qani?");
-        }
     }
 
     public ProfileDTO toDTO(ProfileEntity entity){
@@ -144,16 +139,12 @@ public class ProfileService {
 
     public ProfileEntity toEntity(ProfileDTO dto){
         ProfileEntity entity = new ProfileEntity();
-        entity.setId(dto.getId());
         entity.setName(dto.getName());
         entity.setSurname(dto.getSurname());
         entity.setRole(dto.getRole());
         entity.setEmail(dto.getEmail());
-        entity.setStatus(dto.getStatus());
-        entity.setCreatedDate(dto.getCreatedDate());
-     //   entity.setPhoto_id(dto.getPhoto_id());
-        entity.setVisible(dto.getVisible());
         entity.setPhone(dto.getPhone());
+        entity.setStatus(dto.getStatus());
         entity.setPassword(MD5Util.encode(dto.getPassword()));
         return entity;
     }

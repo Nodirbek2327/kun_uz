@@ -1,10 +1,13 @@
 package com.example.controller;
 
+import com.example.config.CustomUserDetails;
 import com.example.dto.TagDTO;
 import com.example.enums.Language;
 import com.example.service.TagService;
+import com.example.util.SpringSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,12 +15,16 @@ import org.springframework.web.bind.annotation.*;
 public class TagController {
     @Autowired
     private TagService tagService;
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = {"/admin"})
     public ResponseEntity<?> create(@RequestBody TagDTO dto) {
        // JwtDTO jwtDTO = SecurityUtil.hasRole(request, ProfileRole.ADMIN);
-        return ResponseEntity.ok(tagService.createWithJwt(dto, 1));
+        CustomUserDetails userDetails = SpringSecurityUtil.getCurrentUser();
+        return ResponseEntity.ok(tagService.createWithJwt(dto, userDetails.getProfile().getId()));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/admin/update")
     public ResponseEntity<Boolean> update(@RequestBody TagDTO dto,
                                           @PathVariable("id") Integer id) {
@@ -25,6 +32,7 @@ public class TagController {
         return ResponseEntity.ok(tagService.updateWithJwt(id, dto));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/admin/delete")
     public ResponseEntity<String> delete(@RequestParam("id") Integer id) {
        // SecurityUtil.hasRole(request, ProfileRole.ADMIN);
@@ -35,6 +43,7 @@ public class TagController {
         return ResponseEntity.badRequest().body("tag Not Found");
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/admin/pagination")
     public ResponseEntity<?> pagination(@RequestParam("from") int from,
                                         @RequestParam("to") int to) {

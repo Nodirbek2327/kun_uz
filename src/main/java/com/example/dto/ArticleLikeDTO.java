@@ -1,6 +1,6 @@
 package com.example.dto;
 
-import com.example.enums.ArticleLikeStatus;
+import com.example.enums.LikeStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ArticleLikeDTO {
-   private String id;
-   private String profileId;
+   private Integer id;
+   private Integer profileId;
    private String articleId;
    private LocalDateTime createdDate;
-   private ArticleLikeStatus status;
+   private LikeStatus status;
 }

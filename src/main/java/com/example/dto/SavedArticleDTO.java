@@ -8,11 +8,9 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-public class CommentLikeDTO {
-    private String id;
+public class SavedArticleDTO {
+    private Integer id;
     private Integer profileId;
-    private String commentId;
     private String articleId;
     private LocalDateTime createdDate;
-    private LikeStatus status;
 }

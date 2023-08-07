@@ -1,5 +1,6 @@
 package com.example.util;
 
+import com.example.config.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,9 +13,14 @@ public class SpringSecurityUtil {
         return currentPrincipalName;
     }
 
-    public static UserDetails getCurrentUser() {
+//    public static UserDetails getCurrentUser() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        return (UserDetails) authentication.getPrincipal();
+//    }
+
+    public static CustomUserDetails getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (UserDetails) authentication.getPrincipal();
+        return (CustomUserDetails) authentication.getPrincipal();
     }
 
 }

@@ -1,9 +1,9 @@
-POST localhost:8080/api/v1/category/admin
+POST localhost:8080/api/v1/category/admin/create
 Content-Type:  application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2ODk5NDY3MzAsImlkIjoxLCJyb2xlIjoiQURNSU4iLCJleHAiOjE2OTAwMzMxMzAsImlzcyI6Imt1bnV6IHRlc3QgcG9ydGFsaSJ9.nwW8Ei6Z7uZ0qRUvS3snDJg1WXS_3xA_4tefsZfoZZjq9vlK4VlwfiEdVnPYK8_h_F55_rolB9bs3r1nHKs5dQ
+Authorization: Basic Kzk5ODkxNTI1NDQ3NToxMjM0
 
 {
-  "order_number": 1,
+  "orderNumber": 1,
   "nameEng": "Sport eng",
   "nameRu": "Sport ru",
   "nameUz": "Sport uz"

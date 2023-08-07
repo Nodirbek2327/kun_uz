@@ -1,0 +1,10 @@
+POST localhost:8080/api/v1/article_type/admin/create
+Content-Type:  application/json
+Authorization: Basic Kzk5ODkxNTI1NDQ3NToxMjM0
+
+{
+  "orderNumber": 3,
+  "nameEng": "horror eng",
+  "nameRu": "horror ru",
+  "nameUz": "horror uz"
+}

@@ -1,6 +1,6 @@
 package com.example.entity;
 
-import com.example.enums.CommentLikeStatus;
+import com.example.enums.LikeStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,5 +38,5 @@ public class CommentLikeEntity {
     private LocalDateTime createdDate=LocalDateTime.now();
 
     @Column(name = "status")
-    private CommentLikeStatus status;
+    private LikeStatus status;
 }

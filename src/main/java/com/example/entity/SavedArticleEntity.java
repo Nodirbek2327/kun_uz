@@ -1,17 +1,16 @@
 package com.example.entity;
 
-import com.example.enums.LikeStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Setter
 @Getter
-@Table(name = "article_like")
-public class ArticleLikeEntity {
+@Entity
+@Table(name = "saved_article")
+public class SavedArticleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -30,7 +29,4 @@ public class ArticleLikeEntity {
 
     @Column(name = "created_date")
     private LocalDateTime createdDate=LocalDateTime.now();
-
-    @Enumerated(value = EnumType.STRING)
-    private LikeStatus status;
 }
