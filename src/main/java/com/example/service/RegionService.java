@@ -38,6 +38,7 @@ public class RegionService {
     public Boolean updateWithJwt(Integer id, RegionDTO dto) {
         check(dto); // check
         RegionEntity entity = get(id); // get
+        entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameEng(dto.getNameEng());
         entity.setNameRu(dto.getNameRu());
         entity.setNameUz(dto.getNameUz());
@@ -54,7 +55,7 @@ public class RegionService {
     }
 
     public List<RegionDTO> getByLanguage(Language lang) {
-        Iterable<RegionEntity> iterable = regionRepository.findAll();
+        Iterable<RegionEntity> iterable = regionRepository.findAllByVisibleIsTrue();
         List<RegionDTO> list = new LinkedList<>();
         switch (lang){
             case ru:{
@@ -66,6 +67,7 @@ public class RegionService {
                     list.add(dto);
                 });
             }
+            break;
             case eng: {
                 iterable.forEach(regionEntity -> {
                     RegionDTO dto = new RegionDTO();
@@ -75,6 +77,7 @@ public class RegionService {
                     list.add(dto);
                 });
             }
+            break;
             default:{
                 iterable.forEach(regionEntity -> {
                     RegionDTO dto = new RegionDTO();
@@ -98,11 +101,13 @@ public class RegionService {
                     dto.setOrderNumber(entity.getOrderNumber());
                     dto.setName(entity.getNameRu());
             }
+            break;
             case eng: {
                 dto.setId(entity.getId());
                 dto.setOrderNumber(entity.getOrderNumber());
                 dto.setName(entity.getNameEng());
             }
+            break;
             default:{
                 dto.setId(entity.getId());
                 dto.setOrderNumber(entity.getOrderNumber());
@@ -113,9 +118,9 @@ public class RegionService {
     }
 
     public PageImpl<RegionDTO> regionPagination(int page, int size) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
+        Sort sort = Sort.by(Sort.Direction.ASC, "orderNumber"); //  sort qilishga pageablega berib yuboramiz
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<RegionEntity> pageObj = regionRepository.findAll(pageable);
+        Page<RegionEntity> pageObj = regionRepository.findAllByVisibleIsTrue(pageable);
         return new PageImpl<>(getRegionDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
 

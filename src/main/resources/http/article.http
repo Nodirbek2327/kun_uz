@@ -12,3 +12,10 @@ Authorization: Basic MTIzNDU2Nzg6MTIzNDU=
   "articleType": [1, 2],
   "articleTag": [1, 2, 3]
 }
+
+###
+PUT localhost:8080/api/v1/article/open/sharedCount?id=868b3d20-0807-4cb8-b0e1-2f8f7910b11b
+
+
+### get by id and lang  full
+GET localhost:8080/api/v1/article/open/id/lang?lang=uz&articleId=868b3d20-0807-4cb8-b0e1-2f8f7910b11b

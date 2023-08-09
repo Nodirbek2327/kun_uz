@@ -5,8 +5,10 @@ import com.example.exp.AppMethodNotAllowedException;
 import com.example.exp.UnAuthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 
 @ControllerAdvice
 public class ExceptionHandlerController {
@@ -23,5 +25,17 @@ public class ExceptionHandlerController {
     @ExceptionHandler(AppMethodNotAllowedException.class)
     public ResponseEntity<String> handler(AppMethodNotAllowedException e) {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handler(AccessDeniedException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handler(RuntimeException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

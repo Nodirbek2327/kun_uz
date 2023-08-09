@@ -40,6 +40,7 @@ public class TagService {
     public Boolean updateWithJwt(Integer id, TagDTO dto) {
         check(dto); // check
         TagEntity entity = get(id); // get
+        entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameEng(dto.getNameEng());
         entity.setNameRu(dto.getNameRu());
         entity.setNameUz(dto.getNameUz());
@@ -56,7 +57,7 @@ public class TagService {
     }
 
     public List<TagDTO> getByLanguage(Language lang) {
-        Iterable<TagEntity> iterable = tagRepository.findAll();
+        Iterable<TagEntity> iterable = tagRepository.findAllByVisibleIsTrue();
         List<TagDTO> list = new LinkedList<>();
         switch (lang){
             case ru:{
@@ -68,6 +69,7 @@ public class TagService {
                     list.add(dto);
                 });
             }
+            break;
             case eng: {
                 iterable.forEach(entity -> {
                     TagDTO dto = new TagDTO();
@@ -77,6 +79,7 @@ public class TagService {
                     list.add(dto);
                 });
             }
+            break;
             default:{
                 iterable.forEach(entity -> {
                     TagDTO dto = new TagDTO();
@@ -91,9 +94,9 @@ public class TagService {
     }
 
     public PageImpl<TagDTO> regionPagination(int page, int size) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
+        Sort sort = Sort.by(Sort.Direction.ASC, "orderNumber"); //  sort qilishga pageablega berib yuboramiz
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<TagEntity> pageObj = tagRepository.findAll(pageable);
+        Page<TagEntity> pageObj = tagRepository.findAllByVisibleIsTrue(pageable);
         return new PageImpl<>(getTagDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
 
@@ -118,7 +121,7 @@ public class TagService {
         dto.setCreatedDate(entity.getCreatedDate());
         dto.setNameEng(entity.getNameEng());
         dto.setNameRu(entity.getNameRu());
-        dto.setNameRu(entity.getNameRu());
+        dto.setNameUz(entity.getNameUz());
         dto.setOrderNumber(entity.getOrderNumber());
         dto.setVisible(entity.getVisible());
         return dto;

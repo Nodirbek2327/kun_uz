@@ -27,7 +27,7 @@ public class ArticleTypeController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/admin/update")
     public ResponseEntity<Boolean> update(@RequestBody ArticleTypeDTO dto,
-                                          @PathVariable("id") Integer id) {
+                                          @RequestParam("id") Integer id) {
         return ResponseEntity.ok(articleTypeService.updateWithJwt(id, dto));
     }
 

@@ -28,7 +28,7 @@ public class RegionController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/admin/update")
     public ResponseEntity<Boolean> update(@RequestBody RegionDTO dto,
-                                          @PathVariable("id") Integer id /*,
+                                          @RequestParam("id") Integer id /*,
                                           HttpServletRequest request*/) {
        // SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(regionService.updateWithJwt(id, dto));

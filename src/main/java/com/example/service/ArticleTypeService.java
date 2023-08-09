@@ -42,6 +42,7 @@ public class ArticleTypeService {
     public Boolean updateWithJwt(Integer id, ArticleTypeDTO dto) {
         check(dto); // check
         ArticleTypeEntity entity = get(id); // get
+        entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameEng(dto.getNameEng());
         entity.setNameRu(dto.getNameRu());
         entity.setNameUz(dto.getNameUz());
@@ -59,7 +60,7 @@ public class ArticleTypeService {
 
 
     public List<ArticleTypeDTO> getByLanguage(Language lang) {
-        Iterable<ArticleTypeEntity> iterable = articleTypeRepository.findAll();
+        Iterable<ArticleTypeEntity> iterable = articleTypeRepository.findAllByVisibleIsTrue();
         List<ArticleTypeDTO> list = new LinkedList<>();
         switch (lang){
             case ru:{
@@ -94,9 +95,9 @@ public class ArticleTypeService {
     }
 
     public PageImpl<ArticleTypeDTO> regionPagination(int page, int size) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
+        Sort sort = Sort.by(Sort.Direction.ASC, "orderNumber"); //  sort qilishga pageablega berib yuboramiz
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<ArticleTypeEntity> pageObj = articleTypeRepository.findAll(pageable);
+        Page<ArticleTypeEntity> pageObj = articleTypeRepository.findAllByVisibleIsTrue(pageable);
         return new PageImpl<>(getArticleTypeDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
 

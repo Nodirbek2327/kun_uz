@@ -37,6 +37,7 @@ public class CategoryService {
     public Boolean updateWithJwt(Integer id, CategoryDTO dto) {
         check(dto); // check
         CategoryEntity entity = get(id); // get
+        entity.setOrderNumber(dto.getOrderNumber());
         entity.setNameEng(dto.getNameEng());
         entity.setNameRu(dto.getNameRu());
         entity.setNameUz(dto.getNameUz());
@@ -53,7 +54,7 @@ public class CategoryService {
     }
 
     public List<CategoryDTO> getByLanguage(Language lang) {
-        Iterable<CategoryEntity> iterable = categoryRepository.findAll();
+        Iterable<CategoryEntity> iterable = categoryRepository.findAllByVisibleIsTrue();
         List<CategoryDTO> list = new LinkedList<>();
         switch (lang){
             case ru:{
@@ -65,6 +66,7 @@ public class CategoryService {
                     list.add(dto);
                 });
             }
+            break;
             case eng: {
                 iterable.forEach(entity -> {
                     CategoryDTO dto = new CategoryDTO();
@@ -74,6 +76,7 @@ public class CategoryService {
                     list.add(dto);
                 });
             }
+            break;
             default:{
                 iterable.forEach(entity -> {
                     CategoryDTO dto = new CategoryDTO();
@@ -88,9 +91,9 @@ public class CategoryService {
     }
 
     public PageImpl<CategoryDTO> regionPagination(int page, int size) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "order_number"); //  sort qilishga pageablega berib yuboramiz
+        Sort sort = Sort.by(Sort.Direction.ASC, "orderNumber"); //  sort qilishga pageablega berib yuboramiz
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<CategoryEntity> pageObj = categoryRepository.findAll(pageable);
+        Page<CategoryEntity> pageObj = categoryRepository.findAllByVisibleIsTrue(pageable);
         return new PageImpl<>(getCategoryDTOS(pageObj.getContent()), pageable, pageObj.getTotalElements());
     }
 

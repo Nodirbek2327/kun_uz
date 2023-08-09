@@ -58,16 +58,8 @@ public class CommentLikeService {
     }
 
     private void check(CommentLikeDTO dto) {
-        if ((dto.getArticleId().isBlank() || dto.getArticleId() == null) &&
-        !(dto.getCommentId().isBlank() || dto.getCommentId() == null) ){
-            throw new AppBadRequestException("where is article ");
-        }
-        if (!(dto.getArticleId().isBlank() || dto.getArticleId() == null) &&
-                (dto.getCommentId().isBlank() || dto.getCommentId() == null) ){
-            throw new AppBadRequestException("where is article ");
-        }
-        if (dto.getArticleId() != null){
-            throw new AppBadRequestException("which one article or  comment");
+        if (dto.getArticleId().isBlank() || dto.getCommentId().isBlank()){
+            throw new AppBadRequestException("where is article or  comment ");
         }
     }
 }

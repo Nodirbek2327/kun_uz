@@ -2,10 +2,9 @@ POST http://localhost:8080/api/v1/attach/open/upload2
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
-Content-Disposition: form-data; name="file"; filename="dog.jpg"
+Content-Disposition: form-data; name="file"; filename="image1.webp"
 
-< C:\Users\Nodirbek\Pictures\Saved Pictures\dog.jpg
-
+< C:\Users\Nodirbek\Pictures\Saved Pictures\image1.webp
 
 ### get image
 GET http://localhost:8080/api/v1/attach/open/dog.jpg

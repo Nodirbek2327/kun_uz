@@ -3,6 +3,8 @@ package com.example.repository;
 
 import com.example.entity.CategoryEntity;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -20,4 +22,7 @@ public interface CategoryRepository extends CrudRepository<CategoryEntity, Integ
     @Query("update CategoryEntity set visible = false where id =:id")
     int delete(@Param("id") Integer id);
 
+    Iterable<CategoryEntity> findAllByVisibleIsTrue();
+
+    Page<CategoryEntity> findAllByVisibleIsTrue(Pageable pageable);
 }

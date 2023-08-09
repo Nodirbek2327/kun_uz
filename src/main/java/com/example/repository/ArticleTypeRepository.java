@@ -2,6 +2,8 @@ package com.example.repository;
 
 import com.example.entity.ArticleTypeEntity;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -20,4 +22,7 @@ public interface ArticleTypeRepository extends CrudRepository<ArticleTypeEntity,
     @Modifying
     @Query("update ArticleTypeEntity set visible = false where id =:id")
     int delete(@Param("id") Integer id);
+
+    Iterable<ArticleTypeEntity> findAllByVisibleIsTrue();
+    Page<ArticleTypeEntity> findAllByVisibleIsTrue(Pageable pageable);
 }

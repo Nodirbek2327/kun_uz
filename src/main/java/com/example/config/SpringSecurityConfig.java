@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +14,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebSecurity
 @Configuration
@@ -23,6 +25,19 @@ public class SpringSecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private JwtTokenFilter jwtTokenFilter;
+    public static String[] AUTH_WHITELIST = {"/api/v1/auth/**",
+            "/api/v1/news/**",
+            "/api/v1/region/language",
+            "/api/v1/tag/language",
+            "/api/v1/article_type/language",
+            "/api/v1/email_history/open/**",
+            "/api/v1/attach/open/**",
+            "/api/v1/profile/open/**",
+            "/api/v1/comment/open/**",
+            "/api/v1/article/open/**",
+            "/api/v1/category/language"};
 
 //    @Bean
 //    public AuthenticationProvider authenticationProvider() {
@@ -74,17 +89,17 @@ public class SpringSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // authorization (ROLE)
         http.authorizeHttpRequests((c) ->
-               c.requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/api/v1/news/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/region/language").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/tag/language").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/category/language").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/article_type/language").permitAll()
-                .requestMatchers("/api/v1/email_history/open/**").permitAll()
-                .requestMatchers("/api/v1/profile/open/**").permitAll()
-                .requestMatchers("/api/v1/comment/open/**").permitAll()
-                .requestMatchers("/api/v1/attach/open/**").permitAll()
-                .requestMatchers("/api/v1/article/open/**").permitAll()
+               c.requestMatchers(AUTH_WHITELIST).permitAll()
+//                .requestMatchers("/api/v1/news/**").permitAll()
+//                .requestMatchers(HttpMethod.GET, "/api/v1/region/language").permitAll()
+//                .requestMatchers(HttpMethod.GET, "/api/v1/tag/language").permitAll()
+//                .requestMatchers(HttpMethod.GET, "/api/v1/category/language").permitAll()
+//                .requestMatchers(HttpMethod.GET, "/api/v1/article_type/language").permitAll()
+//                .requestMatchers("/api/v1/email_history/open/**").permitAll()
+//                .requestMatchers("/api/v1/profile/open/**").permitAll()
+//                .requestMatchers("/api/v1/comment/open/**").permitAll()
+//                .requestMatchers("/api/v1/attach/open/**").permitAll()
+//                .requestMatchers("/api/v1/article/open/**").permitAll()
 //                .requestMatchers("/api/v1/region/admin", "/api/v1/region/admin/**").hasRole("ROLE_ADMIN")
 //                .requestMatchers( "/api/v1/category/admin/**").hasRole("ROLE_ADMIN")
 //                .requestMatchers( "/api/v1/article_type/admin/**").hasRole("ROLE_ADMIN")
@@ -98,7 +113,7 @@ public class SpringSecurityConfig {
 //                .requestMatchers("/api/v1/comment//admin/delete").hasAnyRole("ROLE_ADMIN", "ROLE_USER")
 //                .requestMatchers("/api/v1/comment_like/admin/**").hasRole("ROLE_ADMIN")
                 .anyRequest().authenticated()
-                ).httpBasic(Customizer.withDefaults());
+                ).addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);   //httpBasic(Customizer.withDefaults());
 
         http.csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable);
         return http.build();
@@ -106,5 +121,16 @@ public class SpringSecurityConfig {
 //                .and().httpBasic();
 //        http.csrf().disable();
 
+    }
+
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**");
+            }
+        };
     }
 }

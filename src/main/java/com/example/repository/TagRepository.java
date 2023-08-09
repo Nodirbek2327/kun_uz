@@ -2,11 +2,14 @@ package com.example.repository;
 
 import com.example.entity.TagEntity;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
+
 
 public interface TagRepository extends CrudRepository<TagEntity, Integer>, PagingAndSortingRepository<TagEntity, Integer> {
     @Transactional
@@ -17,4 +20,7 @@ public interface TagRepository extends CrudRepository<TagEntity, Integer>, Pagin
     @Modifying
     @Query("update TagEntity set visible = false where id =:id")
     int delete(@Param("id") Integer id);
+
+    Iterable<TagEntity> findAllByVisibleIsTrue();
+    Page<TagEntity> findAllByVisibleIsTrue(Pageable pageable);
 }

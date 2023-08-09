@@ -7,6 +7,7 @@ import com.example.entity.RegionEntity;
 import com.example.enums.ArticleStatus;
 import com.example.enums.Language;
 import com.example.exp.AppBadRequestException;
+import com.example.mapper.ArticleFullInfoMapper;
 import com.example.mapper.ArticleShortInfoMapper;
 import com.example.repository.ArticleRepository;
 import com.example.repository.CustomRepository;
@@ -99,16 +100,8 @@ public class ArticleService {
         return articleRepository.getLast8ArticleExceptSome(excludedIds, ArticleStatus.PUBLISHED);
     }
 
-    public ArticleDTO getById(String articleId, Language language) {
-        ArticleEntity entity = get(articleId);
-        ArticleDTO dto = new ArticleDTO();
-        dto.setId(entity.getId());
-        dto.setTitle(entity.getTitle());
-        dto.setDescription(entity.getDescription());
-        dto.setContent(entity.getContent());
-        dto.setImageId(entity.getImageId());
-        dto.setRegion(regionService.getByIdAndLanguage(entity.getRegionId(), language));
-        return dto;
+    public ArticleFullInfoMapper getById(String articleId, Language language) {
+        return articleRepository.getByIdAndLanguage(articleId, language.toString());
     }
 
     public List<ArticleShortInfoMapper> getLast4(Integer typeId, String id) {

@@ -2,6 +2,8 @@ package com.example.repository;
 
 import com.example.entity.ArticleEntity;
 import com.example.enums.ArticleStatus;
+import com.example.enums.Language;
+import com.example.mapper.ArticleFullInfoMapper;
 import com.example.mapper.ArticleShortInfoMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageImpl;
@@ -109,18 +111,57 @@ public interface ArticleRepository extends CrudRepository<ArticleEntity, String>
                                                              @Param("status") ArticleStatus status,
                                                              Pageable pageable);
 
-
-    @Transactional
     @Modifying
-    @Query("update ArticleEntity set viewCount = viewCount+1 where id =:id")
+    @Query("UPDATE ArticleEntity SET viewCount = viewCount WHERE id = :id") // No actual increment here
     int increaseViewCount(@Param("id") String id);
 
+//    @Transactional
+//    @Modifying
+//    @Query("update ArticleEntity set sharedCount = sharedCount+1 where id =:id")
+//    int increaseSharedCount(@Param("id") String id);
     @Transactional
     @Modifying
-    @Query("update ArticleEntity set sharedCount = sharedCount+1 where id =:id")
+    @Query("UPDATE ArticleEntity SET sharedCount = sharedCount WHERE id = :id") // No actual increment here
     int increaseSharedCount(@Param("id") String id);
 
-
+    @Query(value = "SELECT a.id AS id,  a.title AS title,  a.description AS description,  a.content AS content,\n" +
+            "       a.shared_count AS shared_count,  r.id AS region_id,\n" +
+            "         CASE\n" +
+            "            WHEN :language = 'eng' THEN r.name_eng\n" +
+            "            WHEN :language = 'uz' THEN r.name_uz\n" +
+            "            WHEN :language = 'ru' THEN r.name_ru\n" +
+            "            ELSE r.name_uz \n" +
+            "         END AS region_name,  c.id AS category_id,\n" +
+            "         CASE\n" +
+            "             WHEN :language = 'eng' THEN c.name_eng\n" +
+            "             WHEN :language = 'uz' THEN c.name_uz\n" +
+            "             WHEN :language = 'ru' THEN c.name_ru\n" +
+            "             ELSE c.name_uz\n" +
+            "             END AS category_name,\n" +
+            "             a.published_date AS published_date,\n" +
+            "             a.view_count AS view_count,\n" +
+            "             al.like_count AS like_count,\n" +
+            "         (\n" +
+            "        SELECT string_agg(CASE\n" +
+            "                           WHEN :language = 'eng' THEN t.name_eng\n" +
+            "                           WHEN :language = 'uz' THEN t.name_uz\n" +
+            "                           WHEN :language = 'ru' THEN t.name_ru\n" +
+            "                           ELSE t.name_uz\n" +
+            "                           END, ', ')\n" +
+            "             FROM article_tags AS at\n" +
+            "             INNER JOIN tag AS t ON at.article_tag_id = t.id\n" +
+            "             WHERE at.article_id = a.id\n" +
+            "         ) AS tag_list\n" +
+            "             FROM  article AS a\n" +
+            "             LEFT JOIN region AS r ON a.region_id = r.id\n" +
+            "             LEFT JOIN category AS c ON a.category_id = c.id\n" +
+            "             LEFT JOIN (\n" +
+            "             SELECT article_id, COUNT(*) AS like_count\n" +
+            "             FROM article_like\n" +
+            "             GROUP BY article_id\n" +
+            "                       ) AS al ON a.id = al.article_id\n" +
+            "           WHERE  a.id = :articleId", nativeQuery = true)
+    ArticleFullInfoMapper getByIdAndLanguage(@Param("articleId") String articleId, @Param("language") String language);
 
 //    @Transactional
 //    @Modifying

@@ -2,6 +2,8 @@ package com.example.repository;
 
 import com.example.entity.RegionEntity;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -19,4 +21,8 @@ public interface RegionRepository extends CrudRepository<RegionEntity, Integer>,
     @Modifying
     @Query("update RegionEntity set visible = false where id =:id")
     int delete(@Param("id") Integer id);
+
+    Iterable<RegionEntity> findAllByVisibleIsTrue();
+
+    Page<RegionEntity> findAllByVisibleIsTrue(Pageable pageable);
 }

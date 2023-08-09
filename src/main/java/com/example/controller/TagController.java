@@ -27,7 +27,7 @@ public class TagController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/admin/update")
     public ResponseEntity<Boolean> update(@RequestBody TagDTO dto,
-                                          @PathVariable("id") Integer id) {
+                                          @RequestParam("id") Integer id) {
      //   SecurityUtil.hasRole(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(tagService.updateWithJwt(id, dto));
     }

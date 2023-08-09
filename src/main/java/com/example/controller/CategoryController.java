@@ -26,7 +26,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "/admin/update")
     public ResponseEntity<Boolean> update(@RequestBody CategoryDTO dto,
-                                          @PathVariable("id") Integer id) {
+                                          @RequestParam("id") Integer id) {
         return ResponseEntity.ok(categoryService.updateWithJwt(id, dto));
     }
 
